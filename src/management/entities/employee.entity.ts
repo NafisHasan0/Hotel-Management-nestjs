@@ -28,7 +28,7 @@ export enum EmployeeStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   ON_LEAVE = 'on_leave',
-}
+} 
 
 @Entity('Employee')
 export class Employee {

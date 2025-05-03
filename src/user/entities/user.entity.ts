@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
 import { Booking } from '../../booking/entities/booking.entity';
 import { Feedback } from '../../feedback/entities/feedback.entity';
 import { Reservation } from '../../reservation/entities/reservation.entity';
@@ -23,8 +23,24 @@ export class User {
   @Column({ type: 'text', nullable: true })
   address?: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  nid?: string;
+  @Column({ type: 'varchar', length: 50 })
+  nid: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  nationality: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  Profession: string;
+
+  @Column({ type: 'integer', nullable: false })
+  age: number;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  registrationDate: Date;
+
 
   
   @OneToMany(() => Booking, (booking) => booking.user)

@@ -45,8 +45,6 @@ export class Rooms {
   @Column({ type: 'enum', enum: HousekeepingStatus })
   housekeeping_status: HousekeepingStatus;
 
-  @OneToMany(() => Booking, (booking) => booking.room)
-  bookings: Booking[];
 
   @OneToMany(() => RoomItem, (roomItem) => roomItem.room)
   roomItems: RoomItem[];
@@ -54,6 +52,5 @@ export class Rooms {
   @OneToMany(() => HousekeepingHistory, (history) => history.room)
   housekeepingHistory: HousekeepingHistory[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.room)
-  reservations: Reservation[];
+  
 }

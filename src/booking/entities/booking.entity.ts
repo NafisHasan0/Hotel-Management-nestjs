@@ -54,9 +54,9 @@ export class Booking {
   @Column({ type: 'boolean', default: false })
   service_asked: boolean;
 
-  @ManyToOne(() => Rooms, (room) => room.bookings)
-  @JoinColumn({ name: 'room_num' })
-  room: Rooms;
+  @Column('int', { array: true })
+  room_num: number[];
+
 
   @ManyToOne(() => User, (user) => user.bookings)
   @JoinColumn({ name: 'user_id' })

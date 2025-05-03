@@ -27,6 +27,9 @@ export class Reservation {
   @Column()
   number_of_guests: number;
 
+  @Column('int', { array: true })
+  room_num: number[];
+
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   room_price: number;
 
@@ -40,7 +43,5 @@ export class Reservation {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Rooms, (room) => room.reservations)
-  @JoinColumn({ name: 'room_num' })
-  room: Rooms;
+  
 }

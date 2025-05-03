@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,OneToMany,OneToOne,} from 'typeorm';
 import { Management } from './management.entity';
 import { Booking } from '../../booking/entities/booking.entity';
 import { Coupon } from '../../coupon/entities/coupon.entity';
@@ -50,19 +44,16 @@ export class Employee {
   @Column({ type: 'varchar', length: 20 })
   phone: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  nid?: string;
+  @Column({ type: 'varchar', length: 50 })
+  nid: string;
 
   @Column({ type: 'date' })
   hire_date: Date;
 
-  @Column({
-    type: 'enum',
-    enum: EmployeeStatus,
-    default: EmployeeStatus.ACTIVE,
-  })
+  @Column({type: 'enum',enum: EmployeeStatus,default: EmployeeStatus.ACTIVE,})
   status: EmployeeStatus;
 
+  //relations
   @OneToOne(() => Management, (management) => management.employee)
   management: Management;
 

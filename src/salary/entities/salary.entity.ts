@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-  JoinColumn,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,OneToMany,JoinColumn,} from 'typeorm';
 import { Employee } from '../../management/entities/employee.entity';
 import { SalaryHistory } from './salary-history.entity';
 

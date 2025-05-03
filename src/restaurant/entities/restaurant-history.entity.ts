@@ -14,6 +14,10 @@ export class RestaurantHistory {
   @PrimaryGeneratedColumn()
   order_id: number;
 
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.restaurantHistory)
+  @JoinColumn({ name: 'food_id' })
+  food: Restaurant;
+
   @Column()
   quantity: number;
 
@@ -27,9 +31,6 @@ export class RestaurantHistory {
   @JoinColumn({ name: 'booking_id' })
   booking: Booking;
 
-  @ManyToOne(() => Restaurant, (restaurant) => restaurant.restaurantHistory)
-  @JoinColumn({ name: 'food_id' })
-  food: Restaurant;
 
   @ManyToOne(() => Employee, (employee) => employee.restaurantHistory)
   @JoinColumn({ name: 'employee_id' })

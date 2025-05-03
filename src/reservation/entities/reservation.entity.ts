@@ -1,17 +1,7 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,JoinColumn,} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Rooms } from '../../room/entities/room.entity';
 
-export enum TypeOfBooking {
-  WEBSITE = 'website',
-  SELF = 'self',
-}
+
 
 @Entity('Reservation')
 export class Reservation {
@@ -36,8 +26,8 @@ export class Reservation {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   booking_date: Date;
 
-  @Column({ type: 'enum', enum: TypeOfBooking })
-  typeOfBooking: TypeOfBooking;
+  @Column({ type: 'varchar', default: 'website' })
+  typeOfBooking: string;
 
   @ManyToOne(() => User, (user) => user.reservations)
   @JoinColumn({ name: 'user_id' })

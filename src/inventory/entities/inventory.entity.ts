@@ -37,6 +37,6 @@ export class Inventory {
   order_price?: number;
 
   @ManyToOne(() => Employee, (employee) => employee.inventories)
-  @JoinColumn({ name: 'employee_id' })
+  @JoinColumn({ name: 'cleaned_by' })
   updated_by: Employee;
 }

@@ -26,6 +26,7 @@ export class User {
   @Column({ type: 'varchar', length: 50, nullable: true })
   nid?: string;
 
+  
   @OneToMany(() => Booking, (booking) => booking.user)
   bookings: Booking[];
 

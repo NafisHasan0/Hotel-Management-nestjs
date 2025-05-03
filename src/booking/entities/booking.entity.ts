@@ -24,17 +24,28 @@ export class Booking {
   @PrimaryGeneratedColumn()
   booking_id: number;
 
+  @ManyToOne(() => User, (user) => user.bookings)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
   @Column({ type: 'date' })
   checkin_date: Date;
 
   @Column({ type: 'date' })
   checkout_date: Date;
 
+  @Column('int', { array: true })
+  room_num: number[];
+
   @Column()
   number_of_guests: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   room_price: number;
+
+  @ManyToOne(() => Coupon, (coupon) => coupon.bookings, { nullable: true })
+  @JoinColumn({ name: 'coupon_id' })
+  coupon?: Coupon;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   coupon_percent?: number;
@@ -54,24 +65,13 @@ export class Booking {
   @Column({ type: 'boolean', default: false })
   service_asked: boolean;
 
-  @Column('int', { array: true })
-  room_num: number[];
+
+  @ManyToOne(() => Employee, (employee) => employee.bookings)
+  @JoinColumn({ name: 'checkedin_by' })
+  employee: Employee;
 
 
-  @ManyToOne(() => User, (user) => user.bookings)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
-  @ManyToOne(() => Coupon, (coupon) => coupon.bookings, { nullable: true })
-  @JoinColumn({ name: 'coupon_id' })
-  coupon?: Coupon;
-
-  @ManyToOne(() => Employee, (employee) => employee.bookings, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'employee_id' })
-  employee?: Employee;
-
+  
   @OneToMany(() => Accounts, (account) => account.booking)
   accounts: Accounts[];
 

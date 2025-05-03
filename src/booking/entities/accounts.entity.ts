@@ -12,6 +12,10 @@ export class Accounts {
   @PrimaryGeneratedColumn()
   payment_id: number;
 
+  @ManyToOne(() => Booking, (booking) => booking.accounts)
+  @JoinColumn({ name: 'booking_id' })
+  booking: Booking;
+
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total_price: number;
 
@@ -30,7 +34,5 @@ export class Accounts {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   payment_date: Date;
 
-  @ManyToOne(() => Booking, (booking) => booking.accounts)
-  @JoinColumn({ name: 'booking_id' })
-  booking: Booking;
+  
 }

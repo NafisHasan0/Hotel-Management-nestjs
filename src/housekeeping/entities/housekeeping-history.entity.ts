@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,JoinColumn,} from 'typeorm';
 import { Rooms } from '../../room/entities/room.entity';
 import { Employee } from '../../management/entities/employee.entity';
 import { Booking } from '../../booking/entities/booking.entity';
@@ -20,6 +14,10 @@ export class HousekeepingHistory {
   @PrimaryGeneratedColumn()
   housekeeping_id: number;
 
+  @ManyToOne(() => Rooms, (room) => room.housekeepingHistory)
+  @JoinColumn({ name: 'room_num' })
+  room: Rooms;
+
   @Column({ type: 'timestamp' })
   date: Date;
 
@@ -32,9 +30,6 @@ export class HousekeepingHistory {
   @Column({ type: 'text', nullable: true })
   cleaner_feedback?: string;
 
-  @ManyToOne(() => Rooms, (room) => room.housekeepingHistory)
-  @JoinColumn({ name: 'room_num' })
-  room: Rooms;
 
   @ManyToOne(() => Employee, (employee) => employee.housekeepingCleaned)
   @JoinColumn({ name: 'cleaner_id' })

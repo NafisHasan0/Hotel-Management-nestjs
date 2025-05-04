@@ -4,9 +4,9 @@ import { HousekeepingHistory } from '../../housekeeping/entities/housekeeping-hi
 
 
 export enum RoomStatus {
-  AVAILABLE = 'available',
-  OCCUPIED = 'occupied',
-  MAINTENANCE = 'maintenance',
+  AVAILABLE = 'AVAILABLE',
+  OCCUPIED = 'OCCUPIED',
+  MAINTENANCE = 'MAINTENANCE',
 }
 
 export enum HousekeepingStatus {
@@ -44,9 +44,6 @@ export class Rooms {
   @Column({ type: 'enum', enum: HousekeepingStatus })
   housekeeping_status: HousekeepingStatus;
 
-
-  @OneToMany(() => RoomItem, (roomItem) => roomItem.room)
-  roomItems: RoomItem[];
 
   @OneToMany(() => HousekeepingHistory, (history) => history.room)
   housekeepingHistory: HousekeepingHistory[];

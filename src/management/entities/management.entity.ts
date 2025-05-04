@@ -18,10 +18,9 @@ export class Management {
   @Column({ type: 'varchar', length: 255 })
   password: string;
 
-  @Column({ type: 'timestamp', nullable: true })
-  last_login?: Date;
 
-  @OneToOne(() => Employee, (employee) => employee.management)
+
+  @OneToOne(() => Employee, (employee) => employee.management , { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'employee_id' })
   employee: Employee;
 }

@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { ManagementService } from './management.service';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
@@ -56,14 +57,8 @@ export class ManagementController {
     return this.managementService.findAllManagement();
   }
 
-  @Get('management/:id')
-  findOneManagement(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<Management> {
-    return this.managementService.findOneManagement(id);
-  }
-
-  @Put('management/:id')
+  
+  @Patch('management/:id')
   updateManagement(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateManagementDto: UpdateManagementDto,

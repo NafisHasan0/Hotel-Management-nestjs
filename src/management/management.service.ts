@@ -51,7 +51,7 @@ export class ManagementService {
         email: `pending_${savedEmployee.employee_id}@example.com`,
         password: '',
         employee: savedEmployee,
-      });
+      }); 
       await this.managementRepository.save(management);
     }
 

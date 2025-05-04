@@ -47,10 +47,10 @@ export class Employee {
   @Column({ type: 'varchar', length: 50 })
   nid: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date' , default: () => 'CURRENT_TIMESTAMP'})
   hire_date: Date;
 
-  @Column({type: 'enum',enum: EmployeeStatus,default: EmployeeStatus.ACTIVE,})
+  @Column({type: 'enum',enum: EmployeeStatus, default: EmployeeStatus.ACTIVE,})
   status: EmployeeStatus;
 
   //relations

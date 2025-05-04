@@ -14,9 +14,5 @@ export class CreateEmployeeDto {
   @IsString()
   nid: string;
 
-  @IsDateString()
-  hire_date: string;
-
-  @IsEnum(EmployeeStatus)
-  status: EmployeeStatus;
+  
 }

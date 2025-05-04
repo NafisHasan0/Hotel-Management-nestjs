@@ -16,12 +16,14 @@ export enum EmployeeRole {
   RECEPTIONIST = 'receptionist',
   FLOOR_MANAGER = 'floor_manager',
   RESTAURANT_RECEPTIONIST = 'restaurant_receptionist',
+  HOUSEKEEPING_STAFF = 'housekeeping_staff',
+  Inventory_MANAGER = 'inventory_manager',
   CLERK = 'clerk',
   CLEANER = 'cleaner',
   WAITER = 'waiter',
   CHEF = 'chef',
-  SECURITY_GUARD = 'security_guard',
-  HOUSEKEEPING_STAFF = 'housekeeping_staff',
+  SECURITY_GUARD = 'security_guard'
+  
 }
 
 export enum EmployeeStatus {

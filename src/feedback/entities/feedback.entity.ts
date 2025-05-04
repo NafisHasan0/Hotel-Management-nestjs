@@ -18,7 +18,14 @@ export class Feedback {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
-  @ManyToOne(() => User, (user) => user.feedbacks)
+  
+  @Column({ name: 'user_id' })
+  user_id: number;
+   
+  @ManyToOne(() => User, (user) => user.feedbacks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
+  
+  
+  
 }

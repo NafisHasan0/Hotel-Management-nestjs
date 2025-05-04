@@ -10,6 +10,7 @@ import { Management } from './entities/management.entity';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
 import { UpdateEmployeeDto } from './dtos/update-employee.dto';
 import { UpdateManagementDto } from './dtos/update-management.dto';
+ 
 
 @Injectable()
 export class ManagementService {

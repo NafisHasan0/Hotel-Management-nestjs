@@ -5,7 +5,4 @@ export class UpdateFeedbackDto {
   @IsOptional()
   feedback?: string;
 
-  @IsInt()
-  @IsOptional()
-  user_id?: number;
 }

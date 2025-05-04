@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Feedback } from './entities/feedback.entity';
-import { CreateFeedbackDto, UpdateFeedbackDto, DeleteFeedbackDto } from './dtos/dtos';
-
+import { CreateFeedbackDto } from './dtos/createFeedback.dto';
+import { DeleteFeedbackDto } from './dtos/deleteFeedback.dto';
+import { UpdateFeedbackDto } from './dtos/updateFeedback.dto';
+    
 @Injectable()
 export class FeedbackService {
   constructor(

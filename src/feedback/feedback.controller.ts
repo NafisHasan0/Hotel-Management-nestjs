@@ -1,6 +1,8 @@
 import { Controller, Post, Body, Get, Param, Patch, Delete, ParseIntPipe } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
-import { CreateFeedbackDto, UpdateFeedbackDto, DeleteFeedbackDto } from './dtos';
+import { CreateFeedbackDto } from './dtos/createFeedback.dto';
+import { DeleteFeedbackDto } from './dtos/deleteFeedback.dto';
+import { UpdateFeedbackDto } from './dtos/updateFeedback.dto';
 
 @Controller('feedback')
 export class FeedbackController {

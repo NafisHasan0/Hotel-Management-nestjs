@@ -37,5 +37,5 @@ export class RoomItem {
 
   @ManyToOne(() => Employee, (employee) => employee.roomItems)
   @JoinColumn({ name: 'employee_id' })
-  checked_by: Employee;
+  checked_by: Employee;  
 }

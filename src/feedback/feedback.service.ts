@@ -49,8 +49,6 @@ export class FeedbackService {
   }
 
 
-
-
   async update(id: number, dto: UpdateFeedbackDto){
     const feedback = await this.feedbackRepository.findOne({ where: { feedback_id: id } });
     if (!feedback) {

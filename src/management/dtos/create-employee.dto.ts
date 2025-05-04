@@ -1,0 +1,22 @@
+import { IsString, IsEnum, IsDateString } from 'class-validator';
+import { EmployeeRole, EmployeeStatus } from '../entities/employee.entity';
+
+export class CreateEmployeeDto {
+  @IsString()
+  name: string;
+
+  @IsEnum(EmployeeRole)
+  role: EmployeeRole;
+
+  @IsString()
+  phone: string;
+
+  @IsString()
+  nid: string;
+
+  @IsDateString()
+  hire_date: string;
+
+  @IsEnum(EmployeeStatus)
+  status: EmployeeStatus;
+}

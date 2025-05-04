@@ -7,7 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
-  Patch,
+  Logger,
 } from '@nestjs/common';
 import { ManagementService } from './management.service';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
@@ -18,56 +18,74 @@ import { Management } from './entities/management.entity';
 
 @Controller('management')
 export class ManagementController {
-  constructor(private readonly managementService: ManagementService) {}
+  private readonly logger = new Logger(ManagementController.name);
+
+  constructor(private readonly managementService: ManagementService) {
+    this.logger.log('ManagementController initialized');
+  }
 
   // Employee Endpoints
-  @Post('employees')
+  @Post('createEmployees')
   createEmployee(
     @Body() createEmployeeDto: CreateEmployeeDto,
   ): Promise<Employee> {
+    this.logger.log('Creating employee');
     return this.managementService.createEmployee(createEmployeeDto);
   }
 
-  @Get('employees')
+  @Get('viewAllEmployees')
   findAllEmployees(): Promise<Employee[]> {
+    this.logger.log('Fetching all employees');
     return this.managementService.findAllEmployees();
   }
 
-  @Get('employees/:id')
+  @Get('viewEmployeeById/:id')
   findOneEmployee(@Param('id', ParseIntPipe) id: number): Promise<Employee> {
+    this.logger.log(`Fetching employee with ID ${id}`);
     return this.managementService.findOneEmployee(id);
   }
 
-  @Put('employees/:id')
+  @Put('updateEmployeeById/:id')
   updateEmployee(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ): Promise<Employee> {
+    this.logger.log(`Updating employee with ID ${id}`);
     return this.managementService.updateEmployee(id, updateEmployeeDto);
   }
 
-  @Delete('employees/:id')
+  @Delete('deleteEmployeeById/:id')
   deleteEmployee(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    this.logger.log(`Deleting employee with ID ${id}`);
     return this.managementService.deleteEmployee(id);
   }
 
   // Management Endpoints
-  @Get('management')
+  @Get('viewAllManagements')
   findAllManagement(): Promise<Management[]> {
+    this.logger.log('Fetching all management records');
     return this.managementService.findAllManagement();
   }
 
-  
-  @Patch('management/:id')
+  @Get('management/:id')
+  findOneManagement(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Management> {
+    return this.managementService.findOneManagement(id);
+  }
+
+  @Put('management/:id')
   updateManagement(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateManagementDto: UpdateManagementDto,
   ): Promise<Management> {
+    this.logger.log(`Updating management record with ID ${id}`);
     return this.managementService.updateManagement(id, updateManagementDto);
   }
 
-  @Delete('management/:id')
+  @Delete('deleteManagementById/:id')
   deleteManagement(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    this.logger.log(`Deleting management record with ID ${id}`);
     return this.managementService.deleteManagement(id);
   }
 }

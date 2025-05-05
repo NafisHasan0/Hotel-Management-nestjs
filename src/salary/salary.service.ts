@@ -156,12 +156,12 @@ export class SalaryService {
 
     const salaryHistory = this.salaryHistoryRepository.create({
       ...createSalaryHistoryDto,
-      //action_type: 'payment', // Default value
-      bonus: createSalaryHistoryDto.bonus || 0, // Default value
-      employee, // Explicitly set foreign key
-      recorded_by: createSalaryHistoryDto.recorded_by_employee_id, // Explicitly set foreign key
-      salary_id: salaryId, // Explicitly set nullable foreign key
-      totalSalary: totalSalary,
+      // //action_type: 'payment', // Default value
+      // bonus: createSalaryHistoryDto.bonus || 0, // Default value
+      // employee, // Explicitly set foreign key
+      // recorded_by: createSalaryHistoryDto.recorded_by_employee_id, // Explicitly set foreign key
+      // salary_id: salaryId, // Explicitly set nullable foreign key
+      // totalSalary: totalSalary,
     });
     await this.salaryHistoryRepository.save(salaryHistory);
   }

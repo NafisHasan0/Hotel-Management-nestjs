@@ -21,7 +21,7 @@ export class Reservation {
   room_num: number[];
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  room_price: number;
+  total_price: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   booking_date: Date;
@@ -32,9 +32,7 @@ export class Reservation {
   @Column({ type: 'int' })
   user_id: number;
 
-  @ManyToOne(() => User, (user) => user.reservations)
+  @ManyToOne(() => User, (user) => user.reservations, { onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'user_id' })
   user: User;
-
-  
 }

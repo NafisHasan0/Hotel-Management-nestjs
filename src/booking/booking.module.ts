@@ -19,6 +19,6 @@ import { ManagementModule } from '../management/management.module';
 
   controllers: [BookingController],
   providers: [BookingService],
-  exports: [BookingService],
+  exports: [BookingService,TypeOrmModule],
 })
 export class BookingModule {}

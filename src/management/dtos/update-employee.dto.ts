@@ -1,4 +1,18 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateEmployeeDto } from './create-employee.dto';
+import { EmployeeRole,EmployeeStatus } from '../entities/employee.entity';
+import { IsEnum, IsString, IsOptional } from 'class-validator';
 
-export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {}
+export class UpdateEmployeeDto  {
+
+  @IsOptional()
+  @IsEnum(EmployeeRole)
+  role?: EmployeeRole;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsEnum(EmployeeStatus)
+  status?: EmployeeStatus;
+
+}

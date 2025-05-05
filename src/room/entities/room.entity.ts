@@ -32,10 +32,10 @@ export class Rooms {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({type: 'decimal', precision: 10, scale: 2})
   room_price: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
+  @Column({type: 'decimal', precision: 5, scale: 2})
   discount: number;
 
   @Column({ type: 'enum', enum: RoomStatus })

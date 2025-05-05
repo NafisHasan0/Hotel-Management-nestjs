@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Rooms } from './entities/room.entity';
+import { RoomStatus, Rooms } from './entities/room.entity';
 import { RoomItem } from './entities/room-item.entity';
 import { CreateRoomDto } from './dtos/create-room.dto';
 import { UpdateRoomDto } from './dtos/update-room.dto';
@@ -18,55 +18,85 @@ export class RoomService {
 
   // Room-related methods
   async createRoom(dto: CreateRoomDto) {
+    const existingRoom = await this.roomRepository.findOne({ where: { room_num: dto.room_num } });
+    if (existingRoom) {
+      return {message: 'Room already exists' };
+    }
     const room = this.roomRepository.create(dto);
-    return this.roomRepository.save(room);
+    await this.roomRepository.save(room);
+    return { message: 'Room created successfully'};
   }
 
   async findRoomByRoomNum(room_num: number) {
-    return this.roomRepository.findOneOrFail({ where: { room_num }, relations: ['room_items'] });
+    const room = await this.roomRepository.findOne({ where: { room_num: room_num }});
+    if (!room) {
+      return { message: 'Room not found' };
+    }
+    return room;
   }
 
-  async findRoomsByRoomStatus(room_status: 'AVAILABLE' | 'OCCUPIED' | 'MAINTENANCE') {
-    return this.roomRepository.find({ where: { room_status }, relations: ['room_items'] });
+  // Find rooms by status
+  async findRoomsByRoomStatus(room_status: RoomStatus) {
+    const room = await this.roomRepository.find({ where: { room_status: room_status}});
+    if (!room) {
+      return { message: 'Room not found' };
+    }
+    return room;
   }
 
   async updateRoom(room_num: number, dto: UpdateRoomDto) {
-    const room = await this.roomRepository.findOneOrFail({ where: { room_num }, relations: ['room_items'] });
+    const room = await this.roomRepository.findOne({ where: { room_num : room_num} });
+    if (!room) {
+      return { message: 'Room not found' };
+    }
     Object.assign(room, dto);
     return this.roomRepository.save(room);
   }
 
   // RoomItem-related methods
   async createRoomItem(dto: CreateRoomItemDto) {
-    const room = await this.roomRepository.findOneOrFail({ where: { room_num: dto.room_num } });
-    const roomItem = this.roomItemRepository.create({ ...dto, room });
-    return this.roomItemRepository.save(roomItem);
+    const existingItem = await this.roomItemRepository.findOne({ where: { item_name: dto.item_name } }); 
+    if (existingItem) {
+      return { message: 'Item already exists' };
+    }
+   
+    const roomItem = this.roomItemRepository.create(dto);
+    await this.roomItemRepository.save(roomItem);
+    return { message: 'Room item created successfully' };
+
   }
 
   async findAllRoomItems() {
-    return this.roomItemRepository.find({ relations: ['room'] });
+    return this.roomItemRepository.find();
   }
 
   async findRoomItemByItemId(item_id: number) {
-    return this.roomItemRepository.findOneOrFail({ where: { item_id }, relations: ['room'] });
+    const roomItem = await this.roomItemRepository.findOne({ where: { item_id: item_id } });
+    if (!roomItem) {
+      return { message: 'Room item not found' };
+    }
+    return roomItem;
   }
 
   async findRoomItemsByItemName(item_name: string){
-    return this.roomItemRepository.find({ where: { item_name }, relations: ['room'] });
-  }
-
-  async findRoomItemsByRoomNum(room_num: number) {
-    return this.roomItemRepository.find({ where: { room: { room_num } }, relations: ['room'] });
-  }
-
-  async updateRoomItem(item_id: number, dto: UpdateRoomItemDto){
-    const roomItem = await this.roomItemRepository.findOneOrFail({ where: { item_id }, relations: ['room'] });
-    if (dto.room_num && dto.room_num !== roomItem.room.room_num) {
-      const room = await this.roomRepository.findOneOrFail({ where: { room_num: dto.room_num } });
-      roomItem.room = room;
+    const roomItems = await this.roomItemRepository.find({ where: { item_name: item_name } });
+    if (roomItems.length === 0) {
+      return { message: 'Room items not found' };
     }
-    Object.assign(roomItem, dto);
-    return this.roomItemRepository.save(roomItem);
+    return roomItems;
+  }
+
+  async deleteRoomItemById(item_id: number) {
+    const roomItem = await this.roomItemRepository.findOne({ where: { item_id: item_id } });
+    if (!roomItem) {
+      return { message: 'Room item not found' };
+    }
+    await this.roomItemRepository.remove(roomItem);
+    return { message: 'Room item deleted successfully' };
+  }
+
+  async findAllRooms() {
+    return this.roomRepository.find();
   }
 
   

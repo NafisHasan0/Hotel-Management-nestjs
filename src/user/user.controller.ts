@@ -21,6 +21,12 @@ export class UserController {
     return this.userService.findUserById(id);
   }
 
+  //find by name
+  @Get('findbyname/:name')
+  async findUserByName(@Param('name') name: string){
+    return this.userService.findUserByName(name);
+  }
+
   @Patch('updateuser/:id')
   async updateUser(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto,) {
     return this.userService.updateUser(id, dto);

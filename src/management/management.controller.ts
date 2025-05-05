@@ -13,7 +13,7 @@ import { ManagementService } from './management.service';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
 import { UpdateEmployeeDto } from './dtos/update-employee.dto';
 import { UpdateManagementDto } from './dtos/update-management.dto';
-import { Employee } from './entities/employee.entity';
+import { Employee, EmployeeRole, EmployeeStatus } from './entities/employee.entity';
 import { Management } from './entities/management.entity';
 
 @Controller('management')
@@ -50,6 +50,39 @@ export class ManagementController {
   deleteEmployee(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.managementService.deleteEmployee(id);
   }
+
+
+  //view employee by name
+  @Get('viewEmployeeByName/:name')
+  findEmployeeByName(@Param('name') name: string): Promise<Employee[]> {
+    return this.managementService.findEmployeeByName(name);
+  }
+
+  //view employee by phone
+  @Get('viewEmployeeByPhone/:phone')
+  findEmployeeByPhone(@Param('phone') phone: string): Promise<Employee[]> {
+    return this.managementService.findEmployeeByPhone(phone);
+  }
+
+  //view employee by role
+  @Get('viewEmployeeByRole/:role')
+  findEmployeeByRole(@Param('role') role: EmployeeRole): Promise<Employee[]> {
+    return this.managementService.findEmployeeByRole(role);
+  }
+
+  //view employee by status
+  @Get('viewEmployeeByStatus/:status')
+  findEmployeeByStatus(@Param('status') status: EmployeeStatus): Promise<Employee[]> {
+    return this.managementService.findEmployeeByStatus(status);
+  }
+
+
+
+
+
+
+
+
 
   // Management Endpoints
   @Get('viewAllManagements')

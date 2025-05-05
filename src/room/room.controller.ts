@@ -3,6 +3,7 @@ import { RoomService } from './room.service';
 import { CreateRoomDto } from './dtos/create-room.dto';
 import { UpdateRoomDto } from './dtos/update-room.dto';
 import { CreateRoomItemDto } from './dtos/create-room-item.dto';
+import { RoomStatus } from './entities/room.entity';
 
 
 
@@ -22,13 +23,19 @@ export class RoomController {
   }
 
   @Get('search-by-room-status/:room_status')
-  async findRoomsByRoomStatus(@Param('room_status') room_status: 'AVAILABLE' | 'OCCUPIED' | 'MAINTENANCE') {
+  async findRoomsByRoomStatus(@Param('room_status') room_status: RoomStatus) {
     return this.roomService.findRoomsByRoomStatus(room_status);
   }
 
   @Patch('update-room/:room_num')
   async updateRoom(@Param('room_num', ParseIntPipe) room_num: number, @Body() dto: UpdateRoomDto) {
     return this.roomService.updateRoom(room_num, dto);
+  }
+
+  //view all rooms
+  @Get('all-rooms')
+  async findAllRooms() {
+    return this.roomService.findAllRooms();
   }
 
 
@@ -54,7 +61,13 @@ export class RoomController {
     return this.roomService.findRoomItemsByItemName(item_name);
   }
 
-  
+  //delete roomitem by room id
+  @Delete('room-items/delete-by-id/:item_id')
+  async deleteRoomItemById(@Param('item_id', ParseIntPipe) item_id: number) {
+    return this.roomService.deleteRoomItemById(item_id);
+  }
+
+
   
 
  

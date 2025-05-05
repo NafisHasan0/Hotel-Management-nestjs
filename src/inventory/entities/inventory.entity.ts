@@ -1,42 +1,35 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Item } from './item.entity';
 import { Employee } from '../../management/entities/employee.entity';
 
 @Entity('Inventory')
 export class Inventory {
   @PrimaryGeneratedColumn()
-  serial_id: number;
+  inventory_id: number;
 
-  @Column({ type: 'varchar', length: 100 })
-  item_name: string;
+  @Column({ type: 'integer' })
+  item_id: number;
 
-  @Column()
-  quantity: number;
-
-  @Column()
-  issued: number;
-
-  @Column()
-  returned: number;
-
-  @Column()
-  used: number;
+  @ManyToOne(() => Item, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'item_id' })
+  item: Item;
 
   @Column({ type: 'date' })
   date: Date;
 
-  @Column()
-  ordered: number;
+  @Column({ type: 'integer' })
+  previous_quantity: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  order_price?: number;
+  @Column({ type: 'integer' })
+  used_quantity: number;
 
-  @ManyToOne(() => Employee, (employee) => employee.inventories)
-  @JoinColumn({ name: 'cleaned_by' })
-  updated_by: Employee;
+  @Column({ type: 'integer' })
+  current_quantity: number;
+
+  @Column({ type: 'integer' })
+  employee_id: number;
+
+  @ManyToOne(() => Employee, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'employee_id' })
+  employee: Employee;
 }

@@ -68,17 +68,14 @@ export class Employee {
   @OneToMany(() => CouponUsage, (couponUsage) => couponUsage.used_by)
   couponUsages: CouponUsage[];
 
-  @OneToMany(() => RoomItem, (roomItem) => roomItem.checked_by)
-  roomItems: RoomItem[];
-
+ 
   @OneToMany(() => HousekeepingHistory, (history) => history.cleaned_by)
   housekeepingCleaned: HousekeepingHistory[];
 
   @OneToMany(() => HousekeepingHistory, (history) => history.supervisor)
   housekeepingSupervised: HousekeepingHistory[];
 
-  @OneToMany(() => Inventory, (inventory) => inventory.updated_by)
-  inventories: Inventory[];
+
 
   @OneToMany(() => RestaurantHistory, (history) => history.billed_by)
   restaurantHistory: RestaurantHistory[];

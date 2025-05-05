@@ -1,17 +1,18 @@
-import { IsNotEmpty, IsString , IsInt,IsEnum} from "class-validator";
+import { IsNotEmpty, IsString , IsNumber,IsEnum} from "class-validator";
 import { RoomStatus} from '../entities/room.entity'
 import { HousekeepingStatus } from '../entities/room.entity'
 export class CreateRoomDto {
-    @IsString()
+ 
+    @IsNumber()
     @IsNotEmpty()
     room_num: number;
 
     @IsNotEmpty()
-    @IsInt()
+    @IsNumber()
     floor: number;
 
     @IsNotEmpty()
-    @IsInt()
+    @IsNumber()
     capacity: number;
 
     @IsNotEmpty()
@@ -22,11 +23,11 @@ export class CreateRoomDto {
     @IsString()
     description: string;
 
-    @IsNotEmpty()
-    @IsInt()
-    price: number;
+    
+    @IsNumber()
+    room_price: number;
 
-    @IsInt()
+    @IsNumber()
     discount: number;
 
     @IsEnum(RoomStatus)

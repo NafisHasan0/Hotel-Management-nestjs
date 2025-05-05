@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Employee, EmployeeRole } from './entities/employee.entity';
+import { Employee, EmployeeRole, EmployeeStatus } from './entities/employee.entity';
 import { Management } from './entities/management.entity';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
 import { UpdateEmployeeDto } from './dtos/update-employee.dto';
@@ -116,6 +116,34 @@ export class ManagementService {
     const employee = await this.findOneEmployee(id);
     await this.employeeRepository.remove(employee);
   }
+
+  //view employee by phone
+  async findEmployeeByPhone(phone: string): Promise<Employee[]> {
+    return this.employeeRepository.find({where: { phone },relations: ['management'],});
+  }
+
+  //view employee by name
+  async findEmployeeByName(name: string): Promise<Employee[]> {
+    return this.employeeRepository.find({where: { name },relations: ['management'],});
+  }
+
+  //view employee by role
+  async findEmployeeByRole(role: EmployeeRole): Promise<Employee[]> {
+    return this.employeeRepository.find({where: { role },relations: ['management'],});
+  }
+
+  //view employee by status
+  async findEmployeeByStatus(status: EmployeeStatus): Promise<Employee[]> {
+    return this.employeeRepository.find({where: { status },relations: ['management'],});
+  }
+
+
+
+
+
+
+
+
 
   // Management CRUD Operations (no createManagement)
   async findAllManagement(): Promise<Management[]> {

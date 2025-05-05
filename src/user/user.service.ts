@@ -1,6 +1,6 @@
 import { Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './DTOs/user.dto';
 import * as bcrypt from 'bcrypt';
@@ -52,6 +52,13 @@ export class UserService {
   }
 
 
+  async findUserByName(name: string){
+    const user = await this.userRepository.find({where: {name: ILike(`%${name}%`)}});
+    if (user.length === 0) {
+      return { message: 'user not found!'};
+    }
+    return user;
+  } 
 
 
   async updateUser(id: number, dto: UpdateUserDto){

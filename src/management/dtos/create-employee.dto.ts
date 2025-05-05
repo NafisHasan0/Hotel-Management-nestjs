@@ -14,5 +14,7 @@ export class CreateEmployeeDto {
   @IsString()
   nid: string;
 
-  
+
 }
+
+

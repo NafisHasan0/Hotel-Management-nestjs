@@ -1,4 +1,10 @@
-import {Entity,Column,PrimaryGeneratedColumn,OneToMany,OneToOne,} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Management } from './management.entity';
 import { Booking } from '../../booking/entities/booking.entity';
 import { Coupon } from '../../coupon/entities/coupon.entity';
@@ -22,15 +28,14 @@ export enum EmployeeRole {
   CLEANER = 'cleaner',
   WAITER = 'waiter',
   CHEF = 'chef',
-  SECURITY_GUARD = 'security_guard'
-  
+  SECURITY_GUARD = 'security_guard',
 }
 
 export enum EmployeeStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   ON_LEAVE = 'on_leave',
-} 
+}
 
 @Entity('Employee')
 export class Employee {
@@ -49,10 +54,14 @@ export class Employee {
   @Column({ type: 'varchar', length: 50 })
   nid: string;
 
-  @Column({ type: 'date' , default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })
   hire_date: Date;
 
-  @Column({type: 'enum',enum: EmployeeStatus, default: EmployeeStatus.ACTIVE,})
+  @Column({
+    type: 'enum',
+    enum: EmployeeStatus,
+    default: EmployeeStatus.ACTIVE,
+  })
   status: EmployeeStatus;
 
   //relations
@@ -68,13 +77,11 @@ export class Employee {
   @OneToMany(() => CouponUsage, (couponUsage) => couponUsage.used_by)
   couponUsages: CouponUsage[];
 
- 
   @OneToMany(() => HousekeepingHistory, (history) => history.cleaned_by)
   housekeepingCleaned: HousekeepingHistory[];
 
   @OneToMany(() => HousekeepingHistory, (history) => history.supervisor)
   housekeepingSupervised: HousekeepingHistory[];
-
 
   @OneToMany(() => Inventory, (inventory) => inventory.employee)
   inventories: Inventory[];
@@ -85,8 +92,8 @@ export class Employee {
   @OneToMany(() => Salary, (salary) => salary.employee)
   salaries: Salary[];
 
-  @OneToMany(() => Salary, (salary) => salary.paid_by)
-  salariesPaid: Salary[];
+  // @OneToMany(() => Salary, (salary) => salary.paid_by)
+  // salariesPaid: Salary[];
 
   @OneToMany(() => SalaryHistory, (history) => history.employee)
   salaryHistory: SalaryHistory[];

@@ -1,9 +1,29 @@
+import { IsNotEmpty, IsInt, IsObject, IsString } from 'class-validator';
+
+class ItemQuantity {
+  @IsNotEmpty()
+  @IsString()
+  itemName: string;
+
+  @IsNotEmpty()
+  @IsInt()
+  quantity: number;
+}
+
 export class CreateRestaurantHistoryDto {
-    order_id: number;
-    quantity: number;
-    food_price: number;
-    order_date: Date;
-    booking_id: number;
-    food_id: number;
-    employee_id: number;
-  }
+  @IsObject()
+  @IsNotEmpty()
+  items: { [key: string]: number };
+
+  @IsInt()
+  @IsNotEmpty()
+  booking_id: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  food_id: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  employee_id: number;
+}

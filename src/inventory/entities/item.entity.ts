@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Inventory } from './inventory.entity';
 
 @Entity('Item')
 export class Item {
@@ -10,4 +11,9 @@ export class Item {
 
   @Column({ type: 'text', nullable: true })
   description?: string;
+
+  
+  @OneToMany(() => Inventory, (inventory) => inventory.item)
+  inventories: Inventory[];
+
 }

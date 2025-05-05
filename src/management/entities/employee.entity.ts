@@ -76,6 +76,8 @@ export class Employee {
   housekeepingSupervised: HousekeepingHistory[];
 
 
+  @OneToMany(() => Inventory, (inventory) => inventory.employee)
+  inventories: Inventory[];
 
   @OneToMany(() => RestaurantHistory, (history) => history.billed_by)
   restaurantHistory: RestaurantHistory[];

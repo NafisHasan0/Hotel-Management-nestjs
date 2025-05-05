@@ -10,7 +10,7 @@ export class Inventory {
   @Column({ type: 'integer' })
   item_id: number;
 
-  @ManyToOne(() => Item, { onDelete: 'RESTRICT' })
+  @ManyToOne(() => Item, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_id' })
   item: Item;
 
@@ -24,12 +24,15 @@ export class Inventory {
   used_quantity: number;
 
   @Column({ type: 'integer' })
+  ordered_quantity: number;
+
+  @Column({ type: 'integer' })
   current_quantity: number;
 
   @Column({ type: 'integer' })
   employee_id: number;
 
-  @ManyToOne(() => Employee, { onDelete: 'RESTRICT' })
+  @ManyToOne(() => Employee)
   @JoinColumn({ name: 'employee_id' })
   employee: Employee;
 }

@@ -29,6 +29,9 @@ export class Reservation {
   @Column({ type: 'varchar', default: 'website' })
   typeOfBooking: string;
 
+  @Column({ type: 'int' })
+  user_id: number;
+
   @ManyToOne(() => User, (user) => user.reservations)
   @JoinColumn({ name: 'user_id' })
   user: User;

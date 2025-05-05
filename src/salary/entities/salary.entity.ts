@@ -1,12 +1,13 @@
-import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,OneToMany,JoinColumn,} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Employee } from '../../management/entities/employee.entity';
 import { SalaryHistory } from './salary-history.entity';
-
-export enum SalaryStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  DISPUTED = 'disputed',
-}
 
 @Entity('Salary')
 export class Salary {
@@ -16,19 +17,13 @@ export class Salary {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ type: 'date' })
-  payment_date: Date;
-
-  @Column({ type: 'enum', enum: SalaryStatus })
-  status: SalaryStatus;
+  //create employee_id column in employee table
+  @Column({ type: 'int' })
+  employee_id: number;
 
   @ManyToOne(() => Employee, (employee) => employee.salaries)
   @JoinColumn({ name: 'employee_id' })
   employee: Employee;
-
-  @ManyToOne(() => Employee, (employee) => employee.salariesPaid)
-  @JoinColumn({ name: 'paid_by_employee_id' })
-  paid_by: Employee;
 
   @OneToMany(() => SalaryHistory, (history) => history.salary)
   salaryHistory: SalaryHistory[];

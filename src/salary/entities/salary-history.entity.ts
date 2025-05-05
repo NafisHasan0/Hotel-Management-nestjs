@@ -8,23 +8,14 @@ import {
 import { Employee } from '../../management/entities/employee.entity';
 import { Salary } from './salary.entity';
 
-export enum SalaryActionType {
-  PAYMENT = 'payment',
-  ADJUSTMENT = 'adjustment',
-  DISPUTE = 'dispute',
-  APPROVAL = 'approval',
-}
-
 @Entity('SalaryHistory')
 export class SalaryHistory {
   @PrimaryGeneratedColumn()
   history_id: number;
 
-  @Column({ type: 'enum', enum: SalaryActionType })
-  action_type: SalaryActionType;
-
-  @Column({ type: 'text' })
-  details: string;
+  // default value is paymen"
+  @Column({ type: 'text', default: 'payment' })
+  action_type: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   bonus: number;
@@ -40,7 +31,7 @@ export class SalaryHistory {
   employee: Employee;
 
   @ManyToOne(() => Employee, (employee) => employee.salaryHistoryRecorded)
-  @JoinColumn({ name: 'recorded_by_employee_id' })
+  @JoinColumn({ name: 'paid_by_employee_id' })
   recorded_by: Employee;
 
   @ManyToOne(() => Salary, (salary) => salary.salaryHistory, { nullable: true })

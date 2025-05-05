@@ -9,6 +9,6 @@ import { Management } from './entities/management.entity';
   imports: [TypeOrmModule.forFeature([Employee, Management])],
   controllers: [ManagementController],
   providers: [ManagementService],
-  exports: [ManagementService],
+  exports: [ManagementService,TypeOrmModule],
 })
 export class ManagementModule {}

@@ -140,11 +140,6 @@ export class ManagementService {
 
 
 
-
-
-
-
-
   // Management CRUD Operations (no createManagement)
   async findAllManagement(): Promise<Management[]> {
     return this.managementRepository.find({ relations: ['employee'] });

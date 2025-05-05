@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { RoomStatus, Rooms } from './entities/room.entity';
 import { RoomItem } from './entities/room-item.entity';
 import { CreateRoomDto } from './dtos/create-room.dto';
@@ -88,6 +88,16 @@ export class RoomService {
 
   async deleteRoomItemById(item_id: number) {
     const roomItem = await this.roomItemRepository.findOne({ where: { item_id: item_id } });
+    if (!roomItem) {
+      return { message: 'Room item not found' };
+    }
+    await this.roomItemRepository.remove(roomItem);
+    return { message: 'Room item deleted successfully' };
+  }
+
+  //delete room item by nam, but not case sensitive
+  async deleteRoomItemByName(item_name: string) {
+    const roomItem = await this.roomItemRepository.findOne({where: {item_name: ILike(`%${item_name}%`)}});
     if (!roomItem) {
       return { message: 'Room item not found' };
     }

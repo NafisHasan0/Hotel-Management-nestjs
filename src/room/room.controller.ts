@@ -67,6 +67,12 @@ export class RoomController {
     return this.roomService.deleteRoomItemById(item_id);
   }
 
+  //delete by room item name
+  @Delete('room-items/delete-by-name/:item_name')
+  async deleteRoomItemByName(@Param('item_name') item_name: string) {
+    return this.roomService.deleteRoomItemByName(item_name);
+  }
+
 
   
 

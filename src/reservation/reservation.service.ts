@@ -16,7 +16,7 @@ export class ReservationService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async create(dto: CreateReservationDto): Promise<any> {
+  async create(dto: CreateReservationDto){
     // Validate user
     const user = await this.userRepository.findOneBy({ user_id: dto.user_id });
     if (!user) {
@@ -24,13 +24,13 @@ export class ReservationService {
     }
 
     // Validate dates
-    const checkinDate = new Date(dto.checkin_date);
+    const checkinDate = new Date(dto.checkin_date); 
     const checkoutDate = new Date(dto.checkout_date);
     if (checkinDate >= checkoutDate) {
       return { message: 'Check-in date must be before check-out date' };
     }
 
-    // Validate rooms (check existence only, no room_status)
+    // Validate rooms (check existence only)
     const rooms = await this.roomsRepository.find({
       where: { room_num: In(dto.room_num) },
     });
@@ -52,9 +52,15 @@ export class ReservationService {
       )
       .getMany();
 
-    if (conflictingReservations.length > 0) {
-      return { message: 'One or more rooms are not available for the selected dates' };
-    }
+    // Collect conflicting room numbers from reservations
+    const conflictingReservationRooms = new Set<number>();
+    conflictingReservations.forEach(reservation => {
+      reservation.room_num.forEach(roomNum => {
+        if (dto.room_num.includes(roomNum)) {
+          conflictingReservationRooms.add(roomNum);
+        }
+      });
+    });
 
     // Check for conflicts in Booking table
     const conflictingBookings = await this.bookingRepository
@@ -70,14 +76,29 @@ export class ReservationService {
       )
       .getMany();
 
-    if (conflictingBookings.length > 0) {
-      return { message: 'One or more rooms are not available for the selected dates (booking conflict)' };
+    // Collect conflicting room numbers from bookings
+    const conflictingBookingRooms = new Set<number>();
+    conflictingBookings.forEach(booking => {
+      booking.room_num.forEach(roomNum => {
+        if (dto.room_num.includes(roomNum)) {
+          conflictingBookingRooms.add(roomNum);
+        }
+      });
+    });
+
+    // Combine conflicting rooms
+    const allConflictingRooms = [...new Set([...conflictingReservationRooms, ...conflictingBookingRooms])];
+    if (allConflictingRooms.length > 0) {
+      return {
+        message: `Rooms ${allConflictingRooms.join(', ')} are not available for the selected dates`,
+      };
     }
 
-    // Calculate total price
-    const nights = Math.ceil((checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Calculate total price with discount
+    const nights = Math.floor((checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24));
     const totalPrice = rooms.reduce((sum, room) => {
-      const roomPrice = Number(room.room_price) * nights;
+      const adjustedPrice = Number(room.room_price) * (1 - Number(room.discount) / 100);
+      const roomPrice = adjustedPrice * nights;
       return sum + roomPrice;
     }, 0);
 
@@ -107,4 +128,22 @@ export class ReservationService {
       user_id: savedReservation.user_id,
     };
   }
+
+
+
+
+
+    async getAllReservations(){
+        return this.reservationRepository.find();
+    }
+
+    
+    async deleteReservation(reservation_id: number){
+        const reservation = await this.reservationRepository.findOneBy({ reservation_id });
+        if (!reservation) {
+            return { message: 'Reservation not found' };
+        }
+        await this.reservationRepository.delete(reservation_id);
+        return { message: 'Reservation deleted successfully' };
+    }
 }

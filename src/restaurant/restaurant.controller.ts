@@ -31,6 +31,18 @@ export class RestaurantController {
     return this.restaurantService.findOneRestaurant(id);
   }
 
+
+  //find food by name
+  @Get('findByName/:name')
+  findByName(@Param('name') name: string) {
+    return this.restaurantService.findByName(name);
+  }
+
+
+
+
+
+
   @Put('update/:id')
   updateRestaurant(
     @Param('id') id: number,

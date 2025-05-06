@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Coupon } from './entities/coupon.entity';
 import { CreateCouponDto } from './dtos/create-coupon.dto';
 import { UpdateCouponDto } from './dtos/update-coupon.dto';
@@ -44,7 +44,11 @@ export class CouponService {
       return { message: 'Coupon not found' };
     }
     Object.assign(coupon, dto);
-    return this.couponRepository.save(coupon);
+    
+    await this.couponRepository.save(coupon);
+    
+    return { message: 'Coupon updated successfully' };
+
   }
 
   async deleteCoupon(coupon_code:string) {
@@ -56,7 +60,18 @@ export class CouponService {
     return { message: 'Coupon deleted successfully' };
   }
 
-  async findAllCoupons() {
-    return this.couponRepository.find();
+
+  async findCouponsByCouponPercent(coupon_percent: number) {
+    const coupons = await this.couponRepository.find({
+      where: { coupon_percent: MoreThanOrEqual(coupon_percent) }, 
+    });
+  
+    if (coupons.length === 0) {
+      return { message: 'No coupons found with this percent or greater' };
+    }
+  
+    return coupons;
   }
+
+ 
 }

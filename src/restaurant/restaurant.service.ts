@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantHistory } from './entities/restaurant-history.entity';
 import { Booking } from '../booking/entities/booking.entity';
@@ -44,13 +44,29 @@ export class RestaurantService {
   async findOneRestaurant(id: number): Promise<Restaurant> {
     const restaurant = await this.restaurantRepository.findOne({
       where: { food_id: id },
-      relations: ['restaurantHistory'],
+      
     });
     if (!restaurant) {
       throw new NotFoundException(`Restaurant with ID ${id} not found`);
     }
     return restaurant;
   }
+
+
+
+  async findByName(name: string): Promise<Restaurant[]> {
+    const restaurants = await this.restaurantRepository.find({
+      where: { item_name: ILike(`%${name}%`) },
+    });
+    if (restaurants.length === 0) {
+      throw new NotFoundException(`No Restaurant found with name ${name}`);
+    }
+    return restaurants;
+  }
+
+
+
+
 
   async updateRestaurant(
     id: number,
@@ -61,9 +77,10 @@ export class RestaurantService {
     return this.restaurantRepository.save(restaurant);
   }
 
-  async deleteRestaurant(id: number): Promise<void> {
+  async deleteRestaurant(id: number) {
     const restaurant = await this.findOneRestaurant(id);
     await this.restaurantRepository.remove(restaurant);
+    return { message: 'Restaurant deleted successfully' };
   }
 
   // RestaurantHistory Operations

@@ -3,7 +3,7 @@ import { CouponService } from './coupon.service';
 import { CreateCouponDto } from './dtos/create-coupon.dto';
 import { UpdateCouponDto } from './dtos/update-coupon.dto';
 
-
+ 
 @Controller('coupons')
 export class CouponController {
   constructor(private readonly couponService: CouponService) {}
@@ -36,8 +36,8 @@ export class CouponController {
     return this.couponService.deleteCoupon(coupon_code);
   }
 
-  @Get('all-coupons')
-  async findAllCoupons() {
-    return this.couponService.findAllCoupons();
+    @Get('search-by-coupon-percent/:coupon_percent')
+  async findCouponsByCouponPercent(@Param('coupon_percent', ParseIntPipe) coupon_percent: number) {
+    return this.couponService.findCouponsByCouponPercent(coupon_percent);
   }
 }

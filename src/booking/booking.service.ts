@@ -5,12 +5,12 @@ import { Booking, PaymentStatus, TypeOfBooking } from './entities/booking.entity
 import { Accounts, PaymentType } from './entities/accounts.entity';
 import { BookingHistory } from './entities/booking-history.entity';
 import { Customer } from './entities/customer.entity';
-import { Rooms, RoomStatus } from '../room/entities/room.entity';
+import { HousekeepingStatus, Rooms, RoomStatus } from '../room/entities/room.entity';
 import { Coupon } from '../coupon/entities/coupon.entity';
 import { CouponUsage } from '../coupon/entities/coupon-usage.entity';
 import { Reservation } from '../reservation/entities/reservation.entity';
 import { Employee } from '../management/entities/employee.entity';
-import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto } from './dtos/booking.dto';
+import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto, RoomServiceDto } from './dtos/booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -172,6 +172,11 @@ export class BookingService {
         throw new InternalServerErrorException(`Failed to save booking: ${error.message}`);
       }
 
+      await this.roomsRepository.update(
+        { room_num: In(savedBooking.room_num) },
+        { room_status: RoomStatus.OCCUPIED }
+      );
+
       // Log coupon usage
       if (coupon) {
         const couponUsage = this.couponUsageRepository.create({
@@ -186,6 +191,8 @@ export class BookingService {
           throw new InternalServerErrorException(`Failed to save coupon usage: ${error.message}`);
         }
       }
+
+      
 
       return {
         booking_id: savedBooking.booking_id,
@@ -353,6 +360,11 @@ export class BookingService {
       } catch (error) {
         throw new InternalServerErrorException(`Failed to save booking: ${error.message}`);
       }
+
+      await this.roomsRepository.update(
+        { room_num: In(savedBooking.room_num) },
+        { room_status: RoomStatus.OCCUPIED }
+      );
 
       // Log coupon usage
       if (coupon) {
@@ -551,7 +563,21 @@ export class BookingService {
         throw new InternalServerErrorException('Failed to retrieve updated booking');
       }
 
-      return {
+      //if service_asked is true then update the rooms tables housekeepingstatus to needs_service, even the booking has multiple rooms
+      if (dto.service_asked) {
+        try {
+          await this.roomsRepository.update(
+            { room_num: In(updatedBooking.room_num) },
+            { housekeeping_status: HousekeepingStatus.NEEDS_SERVICE }
+          );
+        } catch (error) {
+          throw new InternalServerErrorException(`Failed to update room status: ${error.message}`);
+        }
+      }
+
+      
+
+      return {  
         booking_id: updatedBooking.booking_id,
         customer_id: updatedBooking.customer_id,
         checkin_date: updatedBooking.checkin_date,
@@ -588,10 +614,26 @@ export class BookingService {
         throw new BadRequestException('Booking is already paid');
       }
 
-    
       const totalPrice = Number(booking.total_price);
       const paid = Number(dto.paid);
-      const due = totalPrice - paid;
+
+
+      
+      const previousAccount = await this.accountsRepository.findOne({
+        where: { booking: { booking_id } },
+        order: { payment_date: 'DESC' },
+      });
+
+      let previousDue = 0;
+      let due;
+
+      if (previousAccount) {
+        previousDue = previousAccount.due;
+         due = previousDue - paid;
+      }else{
+         due = totalPrice - paid;
+      }
+      
 
       const account = this.accountsRepository.create({
         booking,
@@ -659,6 +701,11 @@ export class BookingService {
       } catch (error) {
         throw new InternalServerErrorException(`Failed to update booking checkout status: ${error.message}`);
       }
+
+      await this.roomsRepository.update(
+        { room_num: In(booking.room_num) },
+        { room_status: RoomStatus.AVAILABLE }
+      );
 
       // Save to BookingHistory
       const bookingHistory = this.bookingHistoryRepository.create({
@@ -859,5 +906,46 @@ export class BookingService {
       throw new InternalServerErrorException(`Failed to search accounts by booking ID: ${error.message}`);
     }
   }
+
+
+  // search by booking id
+  async searchBookingById(booking_id: number) {
+    try {
+      const booking = await this.bookingRepository.findOne({
+        where: { booking_id },
+        relations: ['customer', 'coupon', 'employee'],
+      });
+      if (!booking) {
+        return { message: 'Booking not found' };
+      }
+
+      return {
+        booking_id: booking.booking_id,
+        customer_id: booking.customer_id,
+        customer_name: booking.customer?.name,
+        checkin_date: booking.checkin_date,
+        checkout_date: booking.checkout_date,
+        room_num: booking.room_num,
+        number_of_guests: booking.number_of_guests,
+        room_price: booking.room_price,
+        coupon_code: booking.coupon?.coupon_code,
+        total_price: booking.total_price,
+        payment_status: booking.payment_status,
+        booking_date: booking.booking_date,
+        typeOfBooking: booking.typeOfBooking,
+        service_asked: booking.service_asked,
+        is_checkedout: booking.is_checkedout,
+        employee_id: booking.employee?.employee_id,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to search bookings by ID: ${error.message}`);
+    }
+  }
+
+
+ 
+
+
+
  
 }

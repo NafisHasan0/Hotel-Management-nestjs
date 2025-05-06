@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Param, Patch, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch, Get, Query,ParseIntPipe } from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto } from './dtos/booking.dto';
+import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto, RoomServiceDto } from './dtos/booking.dto';
 
 @Controller('booking')
 export class BookingController {
@@ -57,5 +57,15 @@ export class BookingController {
   async searchAccountByBookingId(@Param('booking_id') booking_id: number) {
     return this.bookingService.searchAccountByBookingId(booking_id);
   }
+
+  //sarch booking by bookingid
+  @Get(':booking_id')
+  async searchBookingById(@Param('booking_id', ParseIntPipe) booking_id: number) {
+    return this.bookingService.searchBookingById(booking_id);
+  }
+
+
+  
+ 
 
 }

@@ -6,6 +6,7 @@ import { Rooms } from '../room/entities/room.entity';
 import { Booking } from '../booking/entities/booking.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateReservationDto } from './dtos/reservation.dto';
+import { ConfirmationService } from '../confirmation/confirmation.service';
 
 @Injectable()
 export class ReservationService {
@@ -14,6 +15,7 @@ export class ReservationService {
     @InjectRepository(Rooms) private roomsRepository: Repository<Rooms>,
     @InjectRepository(Booking) private bookingRepository: Repository<Booking>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private confirmationService: ConfirmationService,
   ) {}
 
   async create(dto: CreateReservationDto){
@@ -115,6 +117,8 @@ export class ReservationService {
     });
 
     const savedReservation = await this.reservationRepository.save(reservation);
+
+    await this.confirmationService.sendReservationConfirmation(savedReservation);
 
     return {
       reservation_id: savedReservation.reservation_id,

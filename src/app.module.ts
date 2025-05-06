@@ -17,9 +17,13 @@ import { FeedbackModule } from './feedback/feedback.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { UserModule } from './user/user.module';
 import { ManagementModule } from './management/management.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: '.env', 
+  }),
     BookingModule,
     RoomModule,
     HousekeepingModule,

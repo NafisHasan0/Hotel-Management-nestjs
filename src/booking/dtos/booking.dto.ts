@@ -92,6 +92,23 @@ export class UpdateBookingDto {
   coupon_code?: string;
 }
 
+
+export class RoomServiceDto {
+  @IsInt()
+  booking_id: number;
+
+  @IsArray()
+  @IsInt({ each: true })
+  room_num: number[];
+
+  @IsString()
+  @IsOptional()
+  service_asked?: string;
+}
+
+
+
+
 export class CreateAccountDto {
   @IsNumber()
   @Min(0)

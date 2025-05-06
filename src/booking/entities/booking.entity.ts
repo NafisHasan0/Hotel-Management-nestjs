@@ -1,5 +1,4 @@
 import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,OneToMany,JoinColumn,} from 'typeorm';
-import { User } from '../../user/entities/user.entity';
 import { Employee } from '../../management/entities/employee.entity';
 import { Rooms } from '../../room/entities/room.entity';
 import { Coupon } from '../../coupon/entities/coupon.entity';
@@ -7,6 +6,7 @@ import { Accounts } from './accounts.entity';
 import { RestaurantHistory } from '../../restaurant/entities/restaurant-history.entity';
 import { CouponUsage } from '../../coupon/entities/coupon-usage.entity';
 import { HousekeepingHistory } from '../../housekeeping/entities/housekeeping-history.entity';
+import { Customer } from './customer.entity';
 
 export enum PaymentStatus {
   PENDING = 'pending',
@@ -23,10 +23,14 @@ export enum TypeOfBooking {
 export class Booking {
   @PrimaryGeneratedColumn()
   booking_id: number;
+ 
+  @Column({ type: 'int', nullable: false })
+  customer_id: number;
+  
+  @ManyToOne(() => Customer, (customer) => customer.bookings)
+  @JoinColumn({ name: 'customer_id' })
+  customer: Customer;
 
-  @ManyToOne(() => User, (user) => user.bookings)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
 
   @Column({ type: 'date' })
   checkin_date: Date;
@@ -43,9 +47,12 @@ export class Booking {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   room_price: number;
 
+  @Column({ type: 'int', nullable: true })
+  coupon_code?: number;
+
   @ManyToOne(() => Coupon, (coupon) => coupon.bookings, { nullable: true })
   @JoinColumn({ name: 'coupon_id' })
-  coupon?: Coupon;
+  coupon?: Coupon | null;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   coupon_percent?: number;
@@ -53,13 +60,13 @@ export class Booking {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total_price: number;
 
-  @Column({ type: 'enum', enum: PaymentStatus })
+  @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
   payment_status: PaymentStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   booking_date: Date;
 
-  @Column({ type: 'enum', enum: TypeOfBooking })
+  @Column({ type: 'enum', enum: TypeOfBooking ,})
   typeOfBooking: TypeOfBooking;
 
   @Column({ type: 'boolean', default: false })
@@ -86,4 +93,5 @@ export class Booking {
 
   @OneToMany(() => HousekeepingHistory, (history) => history.booking)
   housekeepingHistory: HousekeepingHistory[];
+   
 }

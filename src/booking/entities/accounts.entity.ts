@@ -34,5 +34,4 @@ export class Accounts {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   payment_date: Date;
 
-  
 }

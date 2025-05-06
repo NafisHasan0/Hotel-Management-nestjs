@@ -17,7 +17,7 @@ import { BookingModule } from '../booking/booking.module';
 
   controllers: [CouponController],
   providers: [CouponService],
-  exports: [CouponService],
+  exports: [CouponService,TypeOrmModule],
 })
 export class CouponModule {}
 

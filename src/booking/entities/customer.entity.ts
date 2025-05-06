@@ -1,20 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
-import { Feedback } from '../../feedback/entities/feedback.entity';
-import { Reservation } from '../../reservation/entities/reservation.entity';
+import { Booking } from './booking.entity';
 
-@Entity('User')
-export class User {
+@Entity('Customer')
+export class Customer {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  customer_id: number;
 
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
 
   @Column({ type: 'varchar', length: 20 })
   phone: string;
@@ -38,9 +34,8 @@ export class User {
   registrationDate: Date;
 
 
-  @OneToMany(() => Feedback, (feedback) => feedback.user)
-  feedbacks: Feedback[];
+  @OneToMany(() => Booking, (booking) => booking.customer)
+  bookings: Booking[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.user)
-  reservations: Reservation[];
+
 }

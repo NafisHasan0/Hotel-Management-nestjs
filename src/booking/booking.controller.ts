@@ -1,14 +1,61 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch, Get, Query } from '@nestjs/common';
 import { BookingService } from './booking.service';
+import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto } from './dtos/booking.dto';
 
 @Controller('booking')
 export class BookingController {
+  constructor(private readonly bookingService: BookingService) {}
 
-    constructor(private readonly bookingService: BookingService) {}
+  @Post('in-person')
+  async createInPersonBooking(@Body() dto: CreateInPersonBookingDto) {
+    return this.bookingService.createInPersonBooking(dto);
+  }
 
-    @Post('create')
-    public createBooking(@Body() bookingData: any) {
-        return this.bookingService.createBooking(bookingData);
-    }
-}   
+  @Post('checkin-reservation')
+  async checkinWithReservation(@Body() dto: CreateCheckinWithReservationDto) {
+    return this.bookingService.checkinWithReservation(dto);
+  }
 
+  @Patch('update/:booking_id')
+  async updateBooking(@Param('booking_id') booking_id: number, @Body() dto: UpdateBookingDto) {
+    return this.bookingService.updateBooking(booking_id, dto);
+  }
+
+  @Post('account/:booking_id')
+  async createAccount(@Param('booking_id') booking_id: number, @Body() dto: CreateAccountDto) {
+    return this.bookingService.createAccount(booking_id, dto);
+  }
+
+  @Post('checkout')
+  async checkout(@Body() dto: CheckoutDto) {
+    return this.bookingService.checkout(dto);
+  }
+
+  @Get('payment-status')
+  async searchByPaymentStatus(@Query() dto: SearchByPaymentStatusDto) {
+    return this.bookingService.searchByPaymentStatus(dto);
+  }
+
+  @Get('type')
+  async searchByTypeOfBooking(@Query() dto: SearchByTypeOfBookingDto) {
+    return this.bookingService.searchByTypeOfBooking(dto);
+  }
+
+  @Get('coupon')
+  async searchByCouponCode(@Query() dto: SearchByCouponCodeDto) {
+    return this.bookingService.searchByCouponCode(dto);
+  }
+
+
+  @Get('all')
+  async viewAllBooking() {
+    return this.bookingService.viewAllBooking();
+  }
+
+//search account by booking id
+  @Get('account/:booking_id')
+  async searchAccountByBookingId(@Param('booking_id') booking_id: number) {
+    return this.bookingService.searchAccountByBookingId(booking_id);
+  }
+
+}

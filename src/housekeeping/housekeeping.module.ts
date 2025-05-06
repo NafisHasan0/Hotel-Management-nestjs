@@ -14,5 +14,6 @@ import { ManagementModule } from '../management/management.module';
             RoomModule,
             forwardRef(() =>BookingModule),
             ManagementModule,],
+  exports: [HousekeepingService, TypeOrmModule],
 })
 export class HousekeepingModule {}

@@ -7,12 +7,15 @@ import { UserModule } from '../user/user.module';
 import { RoomModule } from '../room/room.module';
 import { BookingModule } from '../booking/booking.module';
 
-
+ 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reservation]),UserModule,RoomModule,BookingModule],
+  imports: [TypeOrmModule.forFeature([Reservation]),
+  UserModule,
+  RoomModule,
+  forwardRef(() => BookingModule),],
   controllers: [ReservationController],
   providers: [ReservationService],
-  exports: [ReservationService],
+  exports: [ReservationService,TypeOrmModule],
   
 })
 export class ReservationModule {}

@@ -1,5 +1,4 @@
-import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,OneToMany,JoinColumn,} from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,OneToMany,JoinColumn, PrimaryColumn,} from 'typeorm';
 import { Employee } from '../../management/entities/employee.entity';
 import { Rooms } from '../../room/entities/room.entity';
 import { Coupon } from '../../coupon/entities/coupon.entity';
@@ -7,6 +6,7 @@ import { Accounts } from './accounts.entity';
 import { RestaurantHistory } from '../../restaurant/entities/restaurant-history.entity';
 import { CouponUsage } from '../../coupon/entities/coupon-usage.entity';
 import { HousekeepingHistory } from '../../housekeeping/entities/housekeeping-history.entity';
+import { Customer } from './customer.entity';
 
 export enum PaymentStatus {
   PENDING = 'pending',
@@ -19,14 +19,18 @@ export enum TypeOfBooking {
   SELF = 'self',
 }
 
-@Entity('Booking')
-export class Booking {
-  @PrimaryGeneratedColumn()
+@Entity('BookingHistory')
+export class BookingHistory {
+  @PrimaryColumn()
   booking_id: number;
+ 
+  //customer colum
+  @Column({ type: 'int', nullable: false })
+  customer_id: number;
 
-  @ManyToOne(() => User, (user) => user.bookings)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ManyToOne(() => Customer, (customer) => customer.bookings)
+  @JoinColumn({ name: 'customer_id' })
+
 
   @Column({ type: 'date' })
   checkin_date: Date;
@@ -56,7 +60,7 @@ export class Booking {
   @Column({ type: 'enum', enum: PaymentStatus })
   payment_status: PaymentStatus;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp',  })
   booking_date: Date;
 
   @Column({ type: 'enum', enum: TypeOfBooking })
@@ -86,4 +90,5 @@ export class Booking {
 
   @OneToMany(() => HousekeepingHistory, (history) => history.booking)
   housekeepingHistory: HousekeepingHistory[];
+    customer: any;
 }

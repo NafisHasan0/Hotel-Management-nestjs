@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  
 } from '@nestjs/common';
 import { SalaryService } from './salary.service';
 import { CreateSalaryDto } from './dtos/create-salary.dto';
@@ -33,10 +34,7 @@ export class SalaryController {
   }
 
   @Put('updateSalaryById/:id')
-  updateSalary(
-    @Param('id') id: number,
-    @Body() updateSalaryDto: UpdateSalaryDto,
-  ) {
+  updateSalary(@Param('id') id: number,@Body() updateSalaryDto: UpdateSalaryDto,) {
     return this.salaryService.updateSalary(id, updateSalaryDto);
   }
 
@@ -48,7 +46,7 @@ export class SalaryController {
   @Post('createSalaryHistories')
   createSalaryHistory(@Body() createSalaryHistoryDto: CreateSalaryHistoryDto) {
     return this.salaryService.createSalaryHistory(createSalaryHistoryDto);
-  }
+  } 
 
   @Get('findAllSalaryHistories')
   findAllSalaryHistories() {

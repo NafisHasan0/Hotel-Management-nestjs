@@ -26,15 +26,27 @@ export class SalaryHistory {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;
 
+
+
+  @Column({ type: 'int' })
+  employee_id: number;
+
   @ManyToOne(() => Employee, (employee) => employee.salaryHistory)
   @JoinColumn({ name: 'employee_id' })
   employee: Employee;
+
+
 
   @ManyToOne(() => Employee, (employee) => employee.salaryHistoryRecorded)
   @JoinColumn({ name: 'paid_by_employee_id' })
   recorded_by: Employee;
 
-  @ManyToOne(() => Salary, (salary) => salary.salaryHistory, { nullable: true })
+
+
+  @Column({ type: 'int'})
+  salary_id: number;
+
+  @ManyToOne(() => Salary, (salary) => salary.salaryHistory)
   @JoinColumn({ name: 'salary_id' })
-  salary?: Salary;
+  salary: Salary;
 }

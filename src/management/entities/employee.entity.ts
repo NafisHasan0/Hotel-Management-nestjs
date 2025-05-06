@@ -85,9 +85,7 @@ export class Employee {
   @OneToMany(() => Salary, (salary) => salary.employee)
   salaries: Salary[];
 
-  @OneToMany(() => Salary, (salary) => salary.paid_by)
-  salariesPaid: Salary[];
-
+ 
   @OneToMany(() => SalaryHistory, (history) => history.employee)
   salaryHistory: SalaryHistory[];
 

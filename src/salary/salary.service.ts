@@ -53,41 +53,61 @@ export class SalaryService {
     return this.salaryRepository.save(salary);
   }
 
+
+
+
   async findAllSalaries(): Promise<Salary[]> {
     return this.salaryRepository.find({
-      relations: ['employee', 'salaryHistory'],
+      relations: ['employee'],
     });
   }
 
+
+
+
+
   async findOneSalary(id: number): Promise<Salary> {
     const salary = await this.salaryRepository.findOne({
-      where: { salary_id: id },
-      relations: ['employee', 'salaryHistory'],
+      where: { employee_id: id },
+      relations: ['employee'],
     });
+
     if (!salary) {
       throw new NotFoundException(`Salary with ID ${id} not found`);
     }
     return salary;
   }
 
-  async updateSalary(
-    id: number,
-    updateSalaryDto: UpdateSalaryDto,
-  ): Promise<Salary> {
+
+
+
+
+  async updateSalary(id: number, updateSalaryDto: UpdateSalaryDto): Promise<Salary> {
     const salary = await this.findOneSalary(id);
     Object.assign(salary, updateSalaryDto);
     return this.salaryRepository.save(salary);
   }
+
+
+
+
 
   async deleteSalary(id: number): Promise<void> {
     const salary = await this.findOneSalary(id);
     await this.salaryRepository.remove(salary);
   }
 
+
+
+
+
+
+
   // SalaryHistory CRUD Operations
   async createSalaryHistory(createSalaryHistoryDto: CreateSalaryHistoryDto) {
+    
     // Validate employee_id
-    const employee = await this.employeeRepository.findOne({
+    const employee = await this.salaryRepository.findOne({
       where: { employee_id: createSalaryHistoryDto.employee_id },
     });
     if (!employee) {
@@ -97,27 +117,14 @@ export class SalaryService {
     }
 
     // Validate recorded_by_employee_id
-    const recordedBy = await this.employeeRepository.findOne({
-      where: { employee_id: createSalaryHistoryDto.recorded_by_employee_id },
+    const paidBy = await this.employeeRepository.findOne({
+      where: { employee_id: createSalaryHistoryDto.paid_by_employee_id },
     });
-    if (!recordedBy) {
+    if (!paidBy) {
       throw new NotFoundException(
-        `Employee with ID ${createSalaryHistoryDto.recorded_by_employee_id} not found`,
+        `Employee with ID ${createSalaryHistoryDto.paid_by_employee_id} not found`,
       );
     }
-
-    // Validate salary_id if provided
-    // let salary: Salary | null = null;
-    // if (createSalaryHistoryDto.salary_id) {
-    //   salary = await this.salaryRepository.findOne({
-    //     where: { salary_id: createSalaryHistoryDto.salary_id },
-    //   });
-    //   if (!salary) {
-    //     throw new NotFoundException(
-    //       `Salary with ID ${createSalaryHistoryDto.salary_id} not found`,
-    //     );
-    //   }
-    // }
 
     // Check for duplicate payment this month
     const currentMonthStart = new Date();
@@ -141,29 +148,23 @@ export class SalaryService {
       );
     }
 
-    // fatch salay by employee_id
-    const emp = await this.salaryRepository.findOne({
-      where: { employee: { employee_id: createSalaryHistoryDto.employee_id } },
-    });
-    const salaryId = emp?.salary_id;
-    const salary = emp?.amount;
-    const bonus = createSalaryHistoryDto.bonus;
-    const totalSalary = salary ? salary + (bonus || 0) : 0;
+    const bonus = createSalaryHistoryDto.bonus || 0;
+    const salaryId = employee.salary_id;
+    const salary = employee.amount;
+  
+    const totalSalary = salary + (salary * bonus);
 
-    // Calculate totalSalary
-    //const amount = salary ? salary.amount : 0;
-    // const totalSalary = amount + (createSalaryHistoryDto.bonus || 0);
 
     const salaryHistory = this.salaryHistoryRepository.create({
       ...createSalaryHistoryDto,
-      // //action_type: 'payment', // Default value
-      // bonus: createSalaryHistoryDto.bonus || 0, // Default value
-      // employee, // Explicitly set foreign key
-      // recorded_by: createSalaryHistoryDto.recorded_by_employee_id, // Explicitly set foreign key
-      // salary_id: salaryId, // Explicitly set nullable foreign key
-      // totalSalary: totalSalary,
+      employee_id:employee.employee_id,
+      recorded_by: paidBy,
+      bonus: createSalaryHistoryDto.bonus || 0,
+      totalSalary: totalSalary,
+      salary_id: salaryId,
     });
     await this.salaryHistoryRepository.save(salaryHistory);
+    return salaryHistory;
   }
 
   async findAllSalaryHistories(): Promise<SalaryHistory[]> {
@@ -174,7 +175,7 @@ export class SalaryService {
 
   async findOneSalaryHistory(id: number): Promise<SalaryHistory> {
     const salaryHistory = await this.salaryHistoryRepository.findOne({
-      where: { history_id: id },
+      where: { employee_id: id },
       relations: ['employee', 'recorded_by', 'salary'],
     });
     if (!salaryHistory) {
@@ -191,15 +192,15 @@ export class SalaryService {
 
     // Validate recorded_by_employee_id if provided
     if (updateSalaryHistoryDto.recorded_by_employee_id) {
-      const recordedBy = await this.employeeRepository.findOne({
+      const paidBy = await this.employeeRepository.findOne({
         where: { employee_id: updateSalaryHistoryDto.recorded_by_employee_id },
       });
-      if (!recordedBy) {
+      if (!paidBy) {
         throw new NotFoundException(
           `Employee with ID ${updateSalaryHistoryDto.recorded_by_employee_id} not found`,
         );
       }
-      salaryHistory.recorded_by = recordedBy;
+      salaryHistory.recorded_by = paidBy;
     }
 
     // Validate salary_id if provided

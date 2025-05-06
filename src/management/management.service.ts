@@ -10,6 +10,7 @@ import { Management } from './entities/management.entity';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
 import { UpdateEmployeeDto } from './dtos/update-employee.dto';
 import { UpdateManagementDto } from './dtos/update-management.dto';
+import { SalaryService } from '../salary/salary.service';
 
 @Injectable()
 export class ManagementService {
@@ -18,14 +19,21 @@ export class ManagementService {
     private employeeRepository: Repository<Employee>,
     @InjectRepository(Management)
     private managementRepository: Repository<Management>,
+    private readonly salaryService: SalaryService
   ) {}
 
   // Employee CRUD Operations
-  async createEmployee(
-    createEmployeeDto: CreateEmployeeDto,
-  ): Promise<Employee> {
-    const employee = this.employeeRepository.create(createEmployeeDto);
+  async createEmployee(createEmployeeDto: CreateEmployeeDto,): Promise<Employee> {
+    const { salary, ...employeeData } = createEmployeeDto;
+
+    const employee = this.employeeRepository.create(employeeData);
     const savedEmployee = await this.employeeRepository.save(employee);
+
+
+    await this.salaryService.createSalary({
+      employee_id: savedEmployee.employee_id,
+      amount: salary,
+    });
 
     // Automatically create Management record for specific roles
     const rolesRequiringManagement = [
@@ -114,6 +122,7 @@ export class ManagementService {
 
   async deleteEmployee(id: number): Promise<void> {
     const employee = await this.findOneEmployee(id);
+    await this.salaryService.deleteSalary(id);
     await this.employeeRepository.remove(employee);
   }
 

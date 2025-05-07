@@ -65,6 +65,15 @@ export class BookingController {
   }
 
 
+  //view all booking history
+  @Get('bookinghistory/all') 
+  async viewAllBookingHistory() {
+    return this.bookingService.viewAllBookingHistory();
+  }
+
+
+
+
   
  
 

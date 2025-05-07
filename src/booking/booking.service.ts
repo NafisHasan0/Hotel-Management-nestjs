@@ -620,7 +620,7 @@ export class BookingService {
 
       
       const previousAccount = await this.accountsRepository.findOne({
-        where: { booking: { booking_id } },
+        where: { booking_id: booking.booking_id },
         order: { payment_date: 'DESC' },
       });
 
@@ -636,7 +636,7 @@ export class BookingService {
       
 
       const account = this.accountsRepository.create({
-        booking,
+        booking_id: booking.booking_id,
         total_price: totalPrice,
         paid,
         due,
@@ -695,7 +695,8 @@ export class BookingService {
         return { message: 'Booking is not fully paid' };
       }
 
-      // Update is_checkedout
+
+
       try {
         await this.bookingRepository.update(dto.booking_id, { is_checkedout: true });
       } catch (error) {
@@ -709,6 +710,7 @@ export class BookingService {
 
       // Save to BookingHistory
       const bookingHistory = this.bookingHistoryRepository.create({
+        booking_id: dto.booking_id,
         customer: booking.customer,
         customer_id: booking.customer_id, // Explicitly set customer_id
         checkin_date: booking.checkin_date,
@@ -726,6 +728,10 @@ export class BookingService {
         is_checkedout: booking.is_checkedout,
         employee: booking.employee,
       });
+
+      
+
+
 
       try {
         await this.bookingHistoryRepository.save(bookingHistory);
@@ -887,14 +893,13 @@ export class BookingService {
   async searchAccountByBookingId(booking_id: number) {
     try {
       const accounts = await this.accountsRepository.find({
-        where: { booking: { booking_id } },
-        relations: ['booking', 'booking.customer'],
+        where: { booking_id: booking_id },
+        
       });
 
       return accounts.map(account => ({
         payment_id: account.payment_id,
-        booking_id: account.booking.booking_id,
-        customer_name: account.booking.customer?.name,
+        booking_id: booking_id,
         total_price: account.total_price,
         paid: account.paid,
         due: account.due,
@@ -941,6 +946,18 @@ export class BookingService {
       throw new InternalServerErrorException(`Failed to search bookings by ID: ${error.message}`);
     }
   }
+
+
+
+ async viewAllBookingHistory() {
+   
+      const bookings = await this.bookingHistoryRepository.find({ });
+
+      return bookings;
+   
+  }
+
+
 
 
  

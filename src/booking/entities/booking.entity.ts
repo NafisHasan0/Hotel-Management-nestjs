@@ -82,8 +82,8 @@ export class Booking {
   employee: Employee;
 
 
-  @OneToMany(() => Accounts, (account) => account.booking)
-  accounts: Accounts[];
+  // @OneToMany(() => Accounts, (account) => account.booking)
+  // accounts: Accounts[];
 
   @OneToMany(() => RestaurantHistory, (history) => history.booking)
   restaurantHistory: RestaurantHistory[];

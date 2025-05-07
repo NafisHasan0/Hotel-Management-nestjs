@@ -12,9 +12,13 @@ export class Accounts {
   @PrimaryGeneratedColumn()
   payment_id: number;
 
-  @ManyToOne(() => Booking, (booking) => booking.accounts)
-  @JoinColumn({ name: 'booking_id' })
-  booking: Booking;
+  //booking_id coolum
+  @Column({ type: 'int', nullable: false })
+  booking_id: number;
+
+  // @ManyToOne(() => Booking, (booking) => booking.accounts)
+  // @JoinColumn({ name: 'booking_id' })
+  // booking: Booking;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total_price: number;

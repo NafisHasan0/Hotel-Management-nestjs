@@ -28,7 +28,7 @@ export class HousekeepingHistory {
   issue_report?: string;
 
   @Column({ type: 'text', nullable: true })
-  cleaner_feedback?: string;
+  cleaner_feedback?: string; 
 
 
   @ManyToOne(() => Employee, (employee) => employee.housekeepingCleaned)

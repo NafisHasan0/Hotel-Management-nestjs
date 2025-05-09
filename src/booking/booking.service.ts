@@ -703,11 +703,7 @@ export class BookingService {
         throw new InternalServerErrorException(`Failed to update booking checkout status: ${error.message}`);
       }
 
-      await this.roomsRepository.update(
-        { room_num: In(booking.room_num) },
-        { room_status: RoomStatus.AVAILABLE }
-      );
-
+      
       // Save to BookingHistory
       const bookingHistory = this.bookingHistoryRepository.create({
         booking_id: dto.booking_id,
@@ -729,10 +725,6 @@ export class BookingService {
         employee: booking.employee,
       });
 
-      
-
-
-
       try {
         await this.bookingHistoryRepository.save(bookingHistory);
       } catch (error) {
@@ -745,6 +737,18 @@ export class BookingService {
       } catch(error) {
         throw new InternalServerErrorException(`Failed to delete booking: ${error.message}`);
       }
+
+
+      try {
+        await this.roomsRepository.update(
+          { room_num: In(booking.room_num) },
+          { room_status: RoomStatus.AVAILABLE, housekeeping_status: HousekeepingStatus.WAITING_FOR_CLEAN }
+        );
+      } catch (error) {
+        throw new InternalServerErrorException(`Failed to update room status: ${error.message}`);
+      }
+
+
 
       return { message: 'Checkout successful, booking moved to history' };
     } catch (error) {

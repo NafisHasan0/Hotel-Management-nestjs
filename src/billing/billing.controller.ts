@@ -1,16 +1,24 @@
-import { Controller, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Res } from '@nestjs/common';
+import { BillingService } from './billing.service';
+import { Response } from 'express';
 
 @Controller('billing')
 export class BillingController {
+  constructor(private readonly billingService: BillingService) {}
 
-    constructor() {}
-    
-    //create bill by taking booking id in param
-     @Post('bill/:bookingId')
-    async createBill(@Param('bookingId', ParseIntPipe) bookingId: number) {
-      
+  @Get('room/:roomNum')
+  async generateBillingPdf(
+    @Param('roomNum', ParseIntPipe) roomNum: number,
+    @Res() res: Response,
+  ) {
+    const { pdfBuffer, responseDto } = await this.billingService.generateBillingPdf(roomNum);
 
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${responseDto.booking_id}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
 
-
-    }
+    res.end(pdfBuffer);
+  }
 }

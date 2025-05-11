@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Not } from 'typeorm';
+import { InjectRepository, } from '@nestjs/typeorm';
+import { Repository, In, Not,ILike } from 'typeorm';
 import { Booking, PaymentStatus, TypeOfBooking } from './entities/booking.entity';
 import { Accounts, PaymentType } from './entities/accounts.entity';
 import { BookingHistory } from './entities/booking-history.entity';
@@ -10,6 +10,7 @@ import { Coupon } from '../coupon/entities/coupon.entity';
 import { CouponUsage } from '../coupon/entities/coupon-usage.entity';
 import { Reservation } from '../reservation/entities/reservation.entity';
 import { Employee } from '../management/entities/employee.entity';
+import { RestaurantHistory } from '../restaurant/entities/restaurant-history.entity';
 import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto, RoomServiceDto } from './dtos/booking.dto';
 
 @Injectable()
@@ -24,6 +25,8 @@ export class BookingService {
     @InjectRepository(CouponUsage) private couponUsageRepository: Repository<CouponUsage>,
     @InjectRepository(Reservation) private reservationRepository: Repository<Reservation>,
     @InjectRepository(Employee) private employeeRepository: Repository<Employee>,
+    @InjectRepository(RestaurantHistory) private restaurantHistoryRepository: Repository<RestaurantHistory>,
+
   ) {}
 
   // In-person booking
@@ -963,9 +966,96 @@ export class BookingService {
 
 
 
+  //search booking by customer name using ILike
+  async searchBookingByName(customer_name: string) {
+    try {
+      const bookings = await this.bookingRepository.find({
+        where: { customer: { name: ILike(`%${customer_name}%`) } },
+        relations: ['customer', 'coupon', 'employee'],
+      });
+
+      return bookings.map(booking => ({
+        booking_id: booking.booking_id,
+        customer_id: booking.customer_id,
+        customer_name: booking.customer?.name,
+        checkin_date: booking.checkin_date,
+        checkout_date: booking.checkout_date,
+        room_num: booking.room_num,
+        number_of_guests: booking.number_of_guests,
+        room_price: booking.room_price,
+        coupon_code: booking.coupon?.coupon_code,
+        total_price: booking.total_price,
+        payment_status: booking.payment_status,
+        booking_date: booking.booking_date,
+        typeOfBooking: booking.typeOfBooking,
+        service_asked: booking.service_asked,
+        is_checkedout: booking.is_checkedout,
+        employee_id: booking.employee?.employee_id,
+        employee_name: booking.employee?.name,
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to search bookings by customer name: ${error.message}`);
+    }
+  }
+
+
 
  
 
+  //getBookingDetailsByRoomNumber
+  async getBookingDetailsByRoomNumber(room_num: number) {
+    
+    // const booking = await this.bookingRepository.findOne({
+    //   where: { room_num: In([[room_num]]) },
+    // });
+
+    const booking = await this.bookingRepository
+    .createQueryBuilder('booking')
+    .where(':room_num = ANY(booking.room_num)', { room_num })
+    .getOne();
+
+    if (!booking) {
+      return { message: 'Booking not found' };
+    }
+
+    const account = await this.accountsRepository
+    .findOne({
+      where: { booking_id: booking.booking_id },
+      order: { payment_id: 'DESC' },
+      select: ['total_price', 'due'],
+ 
+    });
+
+    if (!account) {
+    return { message: 'Account not found' };
+    }
+
+    //fetch all the restaurant history using booking id
+    const restaurantHistories = await this.restaurantHistoryRepository.find({
+      where: { booking_id: booking.booking_id },
+    });
+
+    let totalRestaurantPrice = 0;
+
+    if (restaurantHistories.length > 0) {
+      totalRestaurantPrice = restaurantHistories.reduce((total, history) => {
+        const foodPrice = history.food_price || 0;
+        return total + history.quantity * foodPrice;
+      }, 0);
+    }
+  
+    return {
+      account,
+      restaurant_total: totalRestaurantPrice > 0 ? totalRestaurantPrice : undefined,
+    };
+
+
+
+
+
+      
+    
+  }
 
 
  

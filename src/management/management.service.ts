@@ -178,4 +178,15 @@ export class ManagementService {
     const management = await this.findOneManagement(id);
     await this.managementRepository.remove(management);
   }
+
+  // find by email
+  async findByEmail(email: string){
+    const management = await this.managementRepository.findOne({
+      where: { email },
+    });
+    if (!management) {
+      return null;
+    }
+    return management;
+  }
 }

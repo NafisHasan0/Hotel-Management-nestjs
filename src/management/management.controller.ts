@@ -109,4 +109,11 @@ export class ManagementController {
   deleteManagement(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.managementService.deleteManagement(id);
   }
+
+
+  // find by email
+  @Get('findbyemail/:email')
+  async findByEmail(@Param('email') email: string) {
+    return this.managementService.findByEmail(email);
+  }
 }

@@ -1,12 +1,15 @@
 import { Controller, Post, Body,Get,Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dtos/reservation.dto';
+import { Role } from '../auth/roles.decorator';
 
 @Controller('reservation')
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
+
   @Post('booking')
+  @Role('user')
   async create(@Body() dto: CreateReservationDto) {
     return this.reservationService.create(dto);
   }

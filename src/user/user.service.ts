@@ -95,4 +95,10 @@ export class UserService {
     await this.userRepository.remove(user);
     return { message: 'user has been removed'};
   }
+
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+  
 }

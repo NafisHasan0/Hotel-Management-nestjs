@@ -36,4 +36,11 @@ export class UserController {
   async deleteUser(@Param('id', ParseIntPipe) id: number){
     return this.userService.deleteUser(id);
   }
+
+
+  //find by email
+  @Get('findbyemail/:email')
+  async findByEmail(@Param('email') email: string){
+    return this.userService.findByEmail(email);
+  }
 }

@@ -18,12 +18,14 @@ import { ReservationModule } from './reservation/reservation.module';
 import { UserModule } from './user/user.module';
 import { ManagementModule } from './management/management.module';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
- 
-  }),
+  imports: [ConfigModule.forRoot({isGlobal: true,}),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      signOptions: { expiresIn: '60m' },
+    }),
     BookingModule,
     RoomModule,
     HousekeepingModule,

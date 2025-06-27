@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Patch, Get, Query,ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch, Get, Query,ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto, RoomServiceDto } from './dtos/booking.dto';
 
@@ -86,6 +86,24 @@ export class BookingController {
     return this.bookingService.getBookingDetailsByRoomNumber(roomNum);
   }
 
+  @Post('available-rooms')
+  async searchAvailableRooms(
+    @Body() body: { checkin_date: string; checkout_date: string },
+  ) {
+    // Convert strings to Date objects
+    const checkinDate = new Date(body.checkin_date);
+    const checkoutDate = new Date(body.checkout_date);
+  
+    // Perform operations with the Date objects
+    if (isNaN(checkinDate.getTime()) || isNaN(checkoutDate.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+    if (checkinDate >= checkoutDate) {
+      throw new BadRequestException('Check-in date must be before check-out date');
+    }
+  
+    return this.bookingService.searchAvailableRooms(checkinDate, checkoutDate);
+  }
 
   
  

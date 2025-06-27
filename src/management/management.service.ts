@@ -165,10 +165,7 @@ export class ManagementService {
     return management;
   }
 
-  async updateManagement(
-    id: number,
-    updateManagementDto: UpdateManagementDto,
-  ): Promise<Management> {
+  async updateManagement(id: number,updateManagementDto: UpdateManagementDto,): Promise<Management> {
     const management = await this.findOneManagement(id);
     Object.assign(management, updateManagementDto);
     return this.managementRepository.save(management);

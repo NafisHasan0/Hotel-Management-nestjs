@@ -29,7 +29,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
         return result;
       }
       return null;
-    }
+    } 
 
     async login(loginDto: LoginDto): Promise<{ access_token: string }> {
       const { email, password } = loginDto;

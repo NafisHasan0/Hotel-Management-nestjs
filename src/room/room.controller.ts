@@ -1,9 +1,12 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dtos/create-room.dto';
 import { UpdateRoomDto } from './dtos/update-room.dto';
 import { CreateRoomItemDto } from './dtos/create-room-item.dto';
 import { RoomStatus } from './entities/room.entity';
+import { Role } from 'src/auth/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 
 
@@ -33,6 +36,8 @@ export class RoomController {
   }
 
   //view all rooms
+  
+  // @Role('manager')
   @Get('all-rooms')
   async findAllRooms() {
     return this.roomService.findAllRooms();
@@ -72,9 +77,5 @@ export class RoomController {
   async deleteRoomItemByName(@Param('item_name') item_name: string) {
     return this.roomService.deleteRoomItemByName(item_name);
   }
-
-
-  
-
  
 }

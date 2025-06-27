@@ -10,6 +10,7 @@ import { Coupon } from '../coupon/entities/coupon.entity';
 import { CouponUsage } from '../coupon/entities/coupon-usage.entity';
 import { Reservation } from '../reservation/entities/reservation.entity';
 import { Employee } from '../management/entities/employee.entity';
+
 import { RestaurantHistory } from '../restaurant/entities/restaurant-history.entity';
 import { CreateInPersonBookingDto, CreateCheckinWithReservationDto, UpdateBookingDto, CreateAccountDto, CheckoutDto, SearchByPaymentStatusDto, SearchByTypeOfBookingDto, SearchByCouponCodeDto, RoomServiceDto } from './dtos/booking.dto';
 
@@ -1049,13 +1050,62 @@ export class BookingService {
       restaurant_total: totalRestaurantPrice > 0 ? totalRestaurantPrice : undefined,
     };
 
-
-
-
-
-      
-    
   }
+
+
+  //search available rooms by date range , check in reservation and booking, and give only those rooms which are not in the booking or in reservation in the date range
+  async searchAvailableRooms(checkinDate: Date, checkoutDate: Date): Promise<Rooms[]> {
+    try {
+
+      // Get all rooms that are not in maintenance
+      const allRooms = await this.roomsRepository.find({
+        where: { room_status: Not(RoomStatus.MAINTENANCE) },
+      });
+
+      // Get booked rooms in the date range
+      const bookedRooms = await this.bookingRepository
+        .createQueryBuilder('booking')
+        .where('(:checkin <= booking.checkout_date AND :checkout >= booking.checkin_date)', {
+          checkin: checkinDate,
+          checkout: checkoutDate,
+        })
+        .getMany();
+
+      const bookedRoomNums = new Set<number>();
+      bookedRooms.forEach(booking => {
+        booking.room_num.forEach(roomNum => {
+          bookedRoomNums.add(roomNum);
+        });
+      });
+
+      // Get reserved rooms in the date range
+      const reservedRooms = await this.reservationRepository
+        .createQueryBuilder('reservation')
+        .where('(:checkin <= reservation.checkout_date AND :checkout >= reservation.checkin_date)', {
+          checkin: checkinDate,
+          checkout: checkoutDate,
+        })
+        .getMany();
+
+      const reservedRoomNums = new Set<number>();
+      reservedRooms.forEach(reservation => {
+        reservation.room_num.forEach(roomNum => {
+          reservedRoomNums.add(roomNum);
+        });
+      });
+
+      // Filter out booked and reserved rooms
+      const availableRooms = allRooms.filter(room => 
+        !bookedRoomNums.has(room.room_num) && !reservedRoomNums.has(room.room_num)
+      );
+
+      return availableRooms;
+      
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to search available rooms by date range: ${error.message}`);
+    }
+  }
+ 
 
 
  

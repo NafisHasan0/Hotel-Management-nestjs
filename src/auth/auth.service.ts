@@ -43,12 +43,12 @@ import { Injectable, BadRequestException } from '@nestjs/common';
       const employee = await this.validateEmployee(email, password);
 
       if (user) {
-        const payload = { sub: user.user_id, email: user.email, role: user.role };
+        const payload = { id: user.user_id, email: user.email, role: user.role };
         return { access_token: this.jwtService.sign(payload) };
       }
 
       if (employee) {
-        const payload = { sub: employee.employee_id, email: employee.email, role: employee.role, isEmployee: true };
+        const payload = { id: employee.employee_id, email: employee.email, role: employee.role, isEmployee: true };
         return { access_token: this.jwtService.sign(payload) };
       }
 

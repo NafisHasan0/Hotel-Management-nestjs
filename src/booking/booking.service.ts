@@ -34,10 +34,10 @@ export class BookingService {
   async createInPersonBooking(dto: CreateInPersonBookingDto) {
     try {
       // Validate employee
-      const employee = await this.employeeRepository.findOneBy({ employee_id: dto.employee_id });
-      if (!employee) {
-        throw new BadRequestException(`Employee with ID ${dto.employee_id} not found`);
-      }
+      // const employee = await this.employeeRepository.findOneBy({ employee_id: dto.employee_id });
+      // if (!employee) {
+      //   throw new BadRequestException(`Employee with ID ${dto.employee_id} not found`);
+      // }
 
       // Validate dates
       const checkinDate = new Date(dto.checkin_date);
@@ -122,10 +122,10 @@ export class BookingService {
         }
       }
 
-      // Validate customer
-      if (!customer || !customer.customer_id) {
-        throw new InternalServerErrorException('Failed to create or retrieve customer with valid ID');
-      }
+      // // Validate customer
+      // if (!customer || !customer.customer_id) {
+      //   throw new InternalServerErrorException('Failed to create or retrieve customer with valid ID');
+      // }
 
       // Calculate room price
       const nights = Math.floor((checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24));

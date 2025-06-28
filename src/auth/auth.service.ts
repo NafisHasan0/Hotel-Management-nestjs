@@ -14,9 +14,15 @@ import { Injectable, BadRequestException } from '@nestjs/common';
     ) {}
 
     async validateUser(email: string, password: string): Promise<any> {
+    
       const user = await this.userService.findByEmail(email);
+      //bcrypt password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      console.log('hashed pass:', hashedPassword);
+
       if (user && await bcrypt.compare(password, user.password)) {
         const { password, ...result } = user;
+        console.log(`[validateUser]  user found.`);
         return result;
       }
       return null;
@@ -34,12 +40,13 @@ import { Injectable, BadRequestException } from '@nestjs/common';
     async login(loginDto: LoginDto): Promise<{ access_token: string }> {
       const { email, password } = loginDto;
       const user = await this.validateUser(email, password);
+      const employee = await this.validateEmployee(email, password);
+
       if (user) {
         const payload = { sub: user.user_id, email: user.email, role: user.role };
         return { access_token: this.jwtService.sign(payload) };
       }
 
-      const employee = await this.validateEmployee(email, password);
       if (employee) {
         const payload = { sub: employee.employee_id, email: employee.email, role: employee.role, isEmployee: true };
         return { access_token: this.jwtService.sign(payload) };

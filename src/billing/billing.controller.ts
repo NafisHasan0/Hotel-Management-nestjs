@@ -7,12 +7,12 @@ import { Response } from 'express';
 export class BillingController {
   constructor(private readonly billingService: BillingService) {}
 
-  @Get('room/:roomNum')
+  @Get('room/:booking_id')
   async generateBillingPdf(
-    @Param('roomNum', ParseIntPipe) roomNum: number,
+    @Param('booking_id', ParseIntPipe) booking_id: number,
     @Res() res: Response,
   ) {
-    const { pdfBuffer, responseDto } = await this.billingService.generateBillingPdf(roomNum);
+    const { pdfBuffer, responseDto } = await this.billingService.generateBillingPdf(booking_id);
 
     res.set({
       'Content-Type': 'application/pdf',

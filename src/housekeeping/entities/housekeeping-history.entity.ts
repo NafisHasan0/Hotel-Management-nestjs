@@ -53,9 +53,9 @@ export class HousekeepingHistory {
   @Column({ type: 'integer' , nullable: true})
   booking_id?: number;
 
-  @ManyToOne(() => Booking, (booking) => booking.housekeepingHistory, {
-    nullable: true,
-  })
+  // @ManyToOne(() => Booking, (booking) => booking.housekeepingHistory, {
+  //   nullable: true,
+  // })
   @JoinColumn({ name: 'booking_id' })
   booking?: Booking;
 }

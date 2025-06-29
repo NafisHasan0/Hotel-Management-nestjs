@@ -182,19 +182,7 @@ export class BookingService {
       );
 
       // Log coupon usage
-      if (coupon) {
-        const couponUsage = this.couponUsageRepository.create({
-          coupon,
-          booking: savedBooking,
-          used_by: { employee_id: dto.employee_id },
-          used_at: new Date(),
-        });
-        try {
-          await this.couponUsageRepository.save(couponUsage);
-        } catch (error) {
-          throw new InternalServerErrorException(`Failed to save coupon usage: ${error.message}`);
-        }
-      }
+      
 
       
 
@@ -371,19 +359,19 @@ export class BookingService {
       );
 
       // Log coupon usage
-      if (coupon) {
-        const couponUsage = this.couponUsageRepository.create({
-          coupon,
-          booking: savedBooking,
-          used_by: { employee_id: dto.employee_id },
-          used_at: new Date(),
-        });
-        try {
-          await this.couponUsageRepository.save(couponUsage);
-        } catch (error) {
-          throw new InternalServerErrorException(`Failed to save coupon usage: ${error.message}`);
-        }
-      }
+      // if (coupon) {
+      //   const couponUsage = this.couponUsageRepository.create({
+      //     coupon,
+      //     booking: savedBooking,
+      //     used_by: { employee_id: dto.employee_id },
+      //     used_at: new Date(),
+      //   });
+      //   try {
+      //     await this.couponUsageRepository.save(couponUsage);
+      //   } catch (error) {
+      //     throw new InternalServerErrorException(`Failed to save coupon usage: ${error.message}`);
+      //   }
+      // }
 
       // Delete reservation
       try {
@@ -548,7 +536,7 @@ export class BookingService {
       if (dto.coupon_code && coupon) {
         const couponUsage = this.couponUsageRepository.create({
           coupon,
-          booking,
+          booking_id: booking_id,
           used_by: { employee_id: 1 }, // Default for updates
           used_at: new Date(),
         });
@@ -699,8 +687,6 @@ export class BookingService {
         return { message: 'Booking is not fully paid' };
       }
 
-
-
       try {
         await this.bookingRepository.update(dto.booking_id, { is_checkedout: true });
       } catch (error) {
@@ -735,13 +721,27 @@ export class BookingService {
         throw new InternalServerErrorException(`Failed to save booking history: ${error.message}`);
       }
 
+      //log coupon usage
+      if (booking.coupon) {
+        const couponUsage = this.couponUsageRepository.create({
+          coupon: booking.coupon,
+          booking_id : dto.booking_id,
+          used_by: booking.employee,
+          used_at: new Date(),
+        });
+        try {
+          await this.couponUsageRepository.save(couponUsage);
+        } catch (error) {
+          throw new InternalServerErrorException(`Failed to save coupon usage: ${error.message}`);
+        }
+      }
+
       // Delete from Booking
       try {
         await this.bookingRepository.delete(dto.booking_id);
       } catch(error) {
         throw new InternalServerErrorException(`Failed to delete booking: ${error.message}`);
       }
-
 
       try {
         await this.roomsRepository.update(
@@ -759,7 +759,7 @@ export class BookingService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException(`Failed to checkout: ${error.message}`);
+      // throw new InternalServerErrorException(`Failed to checkout: ${error.message}`);
     }
   }
 
@@ -925,8 +925,7 @@ export class BookingService {
   async searchBookingById(booking_id: number) {
     try {
       const booking = await this.bookingRepository.findOne({
-        where: { booking_id },
-        relations: ['customer', 'coupon', 'employee'],
+        where: { booking_id: booking_id },
       });
       if (!booking) {
         return { message: 'Booking not found' };
@@ -1003,7 +1002,7 @@ export class BookingService {
 
  
 
-  //getBookingDetailsByRoomNumber
+  //get due by room number
   async getBookingDetailsByRoomNumber(room_num: number) {
     
     // const booking = await this.bookingRepository.findOne({
@@ -1019,17 +1018,33 @@ export class BookingService {
       return { message: 'Booking not found' };
     }
 
-    const account = await this.accountsRepository
+    let account = await this.accountsRepository
     .findOne({
       where: { booking_id: booking.booking_id },
       order: { payment_id: 'DESC' },
       select: ['total_price', 'due'],
- 
+
     });
 
     if (!account) {
-    return { message: 'Account not found' };
+        //create account with total_price and due as 0
+          account = this.accountsRepository.create({
+          booking_id: booking.booking_id,
+          total_price: booking.total_price,
+          paid: 0,
+          due: booking.total_price,
+          payment_type: PaymentType.CASH, // Default payment type
+          payment_date: new Date(),
+        });
+        try {
+          account = await this.accountsRepository.save(account);
+        } catch (error) {
+          throw new InternalServerErrorException(`Failed to create account: ${error.message}`);
+        }
     }
+
+
+
 
     //fetch all the restaurant history using booking id
     const restaurantHistories = await this.restaurantHistoryRepository.find({

@@ -115,7 +115,8 @@ export class CreateAccountDto {
   paid: number;
 
   @IsEnum(PaymentType)
-  payment_type: PaymentType;
+  @IsOptional()
+  payment_type?: PaymentType;
 
   @IsString()
   @IsOptional()

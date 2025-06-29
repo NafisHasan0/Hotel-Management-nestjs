@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Coupon } from './coupon.entity';
 import { Booking } from '../../booking/entities/booking.entity';
+
 import { Employee } from '../../management/entities/employee.entity';
 
 @Entity('CouponUsage')
@@ -21,9 +22,11 @@ export class CouponUsage {
   @JoinColumn({ name: 'coupon_id' })
   coupon: Coupon;
 
-  @ManyToOne(() => Booking, (booking) => booking.couponUsages)
-  @JoinColumn({ name: 'booking_id' })
-  booking: Booking;
+  //bookingid
+  @Column({ type: 'int' })
+  booking_id: number;
+
+
 
   @ManyToOne(() => Employee, (employee) => employee.couponUsages)
   @JoinColumn({ name: 'employee_used' })

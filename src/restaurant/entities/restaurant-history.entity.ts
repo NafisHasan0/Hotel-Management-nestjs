@@ -35,9 +35,9 @@ export class RestaurantHistory {
   @Column({ name: 'booking_id' })
   booking_id: number;
 
-  @ManyToOne(() => Booking, (booking) => booking.restaurantHistory)
-  @JoinColumn({ name: 'booking_id' })
-  booking: Booking;
+  // @ManyToOne(() => Booking, (booking) => booking.restaurantHistory)
+  // @JoinColumn({ name: 'booking_id' })
+  // booking: Booking;
 
 
   @ManyToOne(() => Employee, (employee) => employee.restaurantHistory)

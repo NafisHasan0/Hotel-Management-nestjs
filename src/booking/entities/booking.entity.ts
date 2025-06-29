@@ -85,13 +85,13 @@ export class Booking {
   // @OneToMany(() => Accounts, (account) => account.booking)
   // accounts: Accounts[];
 
-  @OneToMany(() => RestaurantHistory, (history) => history.booking)
-  restaurantHistory: RestaurantHistory[];
+  // @OneToMany(() => RestaurantHistory, (history) => history.booking)
+  // restaurantHistory: RestaurantHistory[];
 
-  @OneToMany(() => CouponUsage, (couponUsage) => couponUsage.booking)
-  couponUsages: CouponUsage[];
+  // @OneToMany(() => CouponUsage, (couponUsage) => couponUsage.booking)
+  // couponUsages: CouponUsage[];
 
-  @OneToMany(() => HousekeepingHistory, (history) => history.booking)
-  housekeepingHistory: HousekeepingHistory[];
+  // @OneToMany(() => HousekeepingHistory, (history) => history.booking)
+  // housekeepingHistory: HousekeepingHistory[];
    
 }

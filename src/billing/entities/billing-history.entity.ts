@@ -9,10 +9,6 @@ export class BillingHistory {
   @Column()
   booking_id: number;
 
-  @ManyToOne(() => Booking)
-  @JoinColumn({ name: 'booking_id' })
-  booking: Booking;
-
   @Column()
   room_num: number;
 

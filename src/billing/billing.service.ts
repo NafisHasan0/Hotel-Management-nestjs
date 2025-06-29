@@ -11,6 +11,7 @@ import * as puppeteer from 'puppeteer';
 import * as handlebars from 'handlebars';
 import * as path from 'path';
 import * as fs from 'fs';
+import { BookingHistory } from 'src/booking/entities/booking-history.entity';
 
 @Injectable()
 export class BillingService {
@@ -23,20 +24,23 @@ export class BillingService {
     private billingHistoryRepository: Repository<BillingHistory>,
     @InjectRepository(Booking)
     private bookingRepository: Repository<Booking>,
+   
+    @InjectRepository(BookingHistory)
+    private bookingHistoryRepository: Repository<BookingHistory>,
     @InjectRepository(Restaurant)
     private restaurantRepository: Repository<Restaurant>,
 
   ) {}
 
-  async generateBillingPdf(roomNum: number): Promise<{ pdfBuffer: Buffer; responseDto: BillingResponseDto }> {
+  async generateBillingPdf(booking_id: number): Promise<{ pdfBuffer: Buffer; responseDto: BillingResponseDto }> {
     // Find active booking
-    const booking = await this.bookingRepository
+    const booking = await this.bookingHistoryRepository
     .createQueryBuilder('booking')
-    .where(':roomNum = ANY(booking.room_num)', { roomNum })
+    .where(':booking_id = ANY(booking.booking_id)', { booking_id })
     .getOne();
 
     if (!booking) {
-      throw new NotFoundException(`No active booking found for room ${roomNum}`);
+      throw new NotFoundException(`No active booking found for room ${booking_id}`);
     }
 
     // Fetch Accounts
@@ -127,10 +131,11 @@ export class BillingService {
     const pdfBuffer = Buffer.from(pdfData);
     await browser.close();
 
+ 
     // Save PDF to BillingHistory
     const billingHistory = this.billingHistoryRepository.create({
-      booking_id: booking.booking_id,
-      room_num: roomNum,
+      booking_id: booking_id,
+      room_num: booking.room_num[0],
       pdf_data: pdfBuffer,
       generated_date: new Date(),
     });

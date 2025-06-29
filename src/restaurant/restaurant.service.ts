@@ -140,7 +140,7 @@ export class RestaurantService {
         quantity,
         food_price: restaurantItem.item_price, // Fetch price from Restaurant table
         order_date: new Date(),
-        booking,
+        booking_id: booking.booking_id, // Use booking_id from Booking table
         billed_by: employee,
       });
 
